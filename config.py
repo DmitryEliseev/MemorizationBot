@@ -1,3 +1,10 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+"""
+Файл для считывания конфигурации
+"""
+
 import json
 
 

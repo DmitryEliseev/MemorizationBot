@@ -1,3 +1,10 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+"""
+Основная логика
+"""
+
 import telebot
 from config import SETTINGS
 import constants

@@ -1,3 +1,11 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+"""
+Работа с БД
+"""
+
+
 from peewee import Model, SqliteDatabase, CharField, DateField, BigIntegerField
 import datetime
 

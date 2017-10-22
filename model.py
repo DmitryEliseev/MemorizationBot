@@ -1,3 +1,10 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+"""
+Модель напоминаний
+"""
+
 import datetime
 import dateutil.relativedelta as datedelta
 
