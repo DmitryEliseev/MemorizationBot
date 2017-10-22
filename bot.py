@@ -30,11 +30,6 @@ def add_notification(message):
     if message_text.startswith('/add'):
         process_adding_new_item(message)
 
-    bot.send_message(
-        message.chat.id,
-        constants.MSG_ADD_COMMAND
-    )
-
 
 def send_notifications():
     for user_id in get_all_users_id():
@@ -50,7 +45,7 @@ def send_notifications():
 
 def process_adding_new_item(message):
     message_text = message.text.replace("/add ", "")
-    message_text = message_text.split('#')
+    message_text = [text_block.strip() for text_block in message_text.split('#')]
 
     if len(message_text) == 1:
         insert_notification(message.chat.id, message_text[0])
