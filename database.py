@@ -5,7 +5,6 @@
 Работа с БД
 """
 
-
 from peewee import Model, SqliteDatabase, CharField, DateField, BigIntegerField
 import datetime
 
@@ -14,19 +13,17 @@ from config import SETTINGS
 from model import RemindingModel
 from model import get_all_dates_for_notification
 
-database = SqliteDatabase(SETTINGS.PATH_TO_DB)
+_database = SqliteDatabase(SETTINGS.PATH_TO_DB)
 
 
-class BaseModel(Model):
-    class Meta:
-        database = SqliteDatabase(SETTINGS.PATH_TO_DB)
-
-
-class Reminding(BaseModel):
+class Reminding(Model):
     user_id = BigIntegerField()
     memorization_date = DateField()
     caption = CharField()
     link = CharField(null=True)
+
+    class Meta:
+        database = _database
 
 
 def get_all_notifications(user_id):
@@ -80,8 +77,8 @@ def _init_db():
     Создаёт таблицы, если ещё не были созданы
     """
     global _is_inited
-    database.connect()
-    database.create_table(Reminding, safe=True)
+    _database.connect()
+    _database.create_table(Reminding, safe=True)
     _is_inited = True
 
 
