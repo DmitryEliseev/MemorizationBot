@@ -5,7 +5,7 @@
 Работа с БД
 """
 
-from peewee import Model, SqliteDatabase, CharField, DateField, BigIntegerField
+from peewee import Model, SqliteDatabase, CharField, DateField, BigIntegerField, ForeignKeyField
 import datetime
 
 from config import SETTINGS
@@ -19,8 +19,19 @@ _database = SqliteDatabase(SETTINGS.PATH_TO_DB)
 class Reminding(Model):
     user_id = BigIntegerField()
     memorization_date = DateField()
+    year = BigIntegerField(null=True)
     caption = CharField()
     link = CharField(null=True)
+    author = ForeignKeyField(Author)
+
+    class Meta:
+        database = _database
+
+
+class Author(Model):
+    name = CharField()
+    birthday = BigIntegerField()
+    deathday = BigIntegerField()
 
     class Meta:
         database = _database
@@ -72,6 +83,16 @@ def insert_notification(user_id, caption, link=None):
     )
 
 
+def full_db():
+    # Чтение данных из файла
+    with open('reminding.sql', 'r', encoding="utf-8") as file:
+        inserts = file.read().split(';')[1:-2]
+
+    # Построчное исполнение команд
+    for i in inserts:
+        _database.execute_sql(i)
+
+
 def _init_db():
     """
     Создаёт таблицы, если ещё не были созданы
@@ -79,6 +100,7 @@ def _init_db():
     global _is_inited
     _database.connect()
     _database.create_table(Reminding, safe=True)
+    full_db()
     _is_inited = True
 
 
