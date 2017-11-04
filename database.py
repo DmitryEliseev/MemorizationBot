@@ -5,70 +5,69 @@
 Работа с БД
 """
 
-from peewee import Model, SqliteDatabase, CharField, DateField, BigIntegerField, ForeignKeyField
+import os
 import datetime
+
+from peewee import Model
+from peewee import SqliteDatabase
+from peewee import CharField
+from peewee import DateField
+from peewee import BigIntegerField
+from peewee import ForeignKeyField
 
 from config import SETTINGS
 
-from model import RemindingModel
-from model import get_all_dates_for_notification
+from notification_model import RemindingModel
+from notification_model import get_all_dates_for_notification
 
 _database = SqliteDatabase(SETTINGS.PATH_TO_DB)
-
-
-class Reminding(Model):
-    user_id = BigIntegerField()
-    memorization_date = DateField()
-    year = BigIntegerField(null=True)
-    caption = CharField()
-    link = CharField(null=True)
-    author = ForeignKeyField(Author)
-
-    class Meta:
-        database = _database
 
 
 class Author(Model):
     name = CharField()
     birthday = BigIntegerField()
-    deathday = BigIntegerField()
+    death_day = BigIntegerField()
 
     class Meta:
         database = _database
 
 
-def get_all_notifications(user_id):
+class Reminding(Model):
+    memorization_date = DateField()
+    author = ForeignKeyField(Author, related_name='author')
+    year = BigIntegerField(null=True)
+    caption = CharField()
+    link = CharField()
+
+    class Meta:
+        database = _database
+
+
+def get_all_notifications():
     if not _is_inited:
         _init_db()
 
     notifications = []
 
     for date in get_all_dates_for_notification():
-        remindings = Reminding.select().where(
-            (Reminding.memorization_date == date) & (Reminding.user_id == user_id)
-        )
+        remindings = Reminding.select().where((Reminding.memorization_date == date))
+
         if remindings:
             for reminding in remindings:
                 notifications.append(
                     RemindingModel(
                         reminding.caption,
-                        reminding.link
+                        reminding.year,
+                        reminding.link,
+                        reminding.author.name,
+                        reminding.author.birthday,
+                        reminding.author.death_day,
+                        reminding.memorization_date
                     )
 
                 )
 
     return notifications
-
-
-def get_all_users_id():
-    if not _is_inited:
-        _init_db()
-
-    users_id = []
-    for user_id in Reminding.select(Reminding.user_id).distinct():
-        users_id.append(user_id)
-
-    return users_id
 
 
 def insert_notification(user_id, caption, link=None):
@@ -85,12 +84,12 @@ def insert_notification(user_id, caption, link=None):
 
 def full_db():
     # Чтение данных из файла
-    with open('reminding.sql', 'r', encoding="utf-8") as file:
-        inserts = file.read().split(';')[1:-2]
+    with open('reminding.db.sql', 'r', encoding="utf-8") as file:
+        insert_commands = file.read().split(';')[1:-2]
 
     # Построчное исполнение команд
-    for i in inserts:
-        _database.execute_sql(i)
+    for insert in insert_commands:
+        _database.execute_sql(insert)
 
 
 def _init_db():
@@ -99,9 +98,14 @@ def _init_db():
     """
     global _is_inited
     _database.connect()
-    _database.create_table(Reminding, safe=True)
+    _database.create_tables([Author, Reminding], safe=True)
+    print("БД создана")
     full_db()
+    print("БД наполнена")
     _is_inited = True
 
 
-_is_inited = False
+if os.path.isfile(SETTINGS.PATH_TO_DB):
+    _is_inited = True
+else:
+    _is_inited = False
