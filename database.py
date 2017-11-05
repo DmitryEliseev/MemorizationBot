@@ -20,7 +20,10 @@ from config import SETTINGS
 from notification_model import RemindingModel
 from notification_model import get_all_dates_for_notification
 
-_database = SqliteDatabase(SETTINGS.PATH_TO_DB)
+# path_to_db = SETTINGS.PATH_TO_DB
+path_to_db = SETTINGS.PATH_TO_DB_SERVER
+
+_database = SqliteDatabase(path_to_db)
 
 
 class Author(Model):
@@ -105,7 +108,7 @@ def _init_db():
     _is_inited = True
 
 
-if os.path.isfile(SETTINGS.PATH_TO_DB):
+if os.path.isfile(path_to_db):
     _is_inited = True
 else:
     _is_inited = False
