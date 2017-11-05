@@ -20,10 +20,18 @@ bot = telebot.TeleBot(SETTINGS.TOKEN)
 
 
 def send_notifications():
-    for notification in get_all_notifications():
+    notifications = get_all_notifications()
+
+    if notifications:
+        for notification in notifications:
+            bot.send_message(
+                SETTINGS.TELEGRAM_OWNER_ID,
+                str(notification)
+            )
+    else:
         bot.send_message(
             SETTINGS.TELEGRAM_OWNER_ID,
-            str(notification)
+            "На сегодня уведомлений нет"
         )
 
 
