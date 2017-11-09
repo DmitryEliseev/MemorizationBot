@@ -36,7 +36,9 @@ def send_notifications():
 
 
 t_test = "22:27"
-t_real = "09:00"
+# TODO: подумать над локализацией времени для различных машин
+# https://stackoverflow.com/questions/13218506/how-to-get-system-timezone-setting-and-pass-it-to-pytz-timezone 
+t_real = "06:00"
 job_time = t_real
 
 schedule.every().day.at(job_time).do(send_notifications)

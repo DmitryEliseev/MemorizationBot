@@ -15,6 +15,7 @@ INSERT INTO `reminding` VALUES (13,'2017-08-6',4,1837,'Смерть поэта',
 INSERT INTO `reminding` VALUES (14,'2017-07-30',3,1969,'Остров романтики','http://www.stihi-rus.ru/1/Asadov/91.htm');
 INSERT INTO `reminding` VALUES (15,'2017-07-23',2,1828,'Весенняя гроза','http://www.stihi-rus.ru/1/Tyutchev/13.htm');
 INSERT INTO `reminding` VALUES (16,'2017-07-16',1,1962,'Необитаемые острова','http://rupoem.ru/rozhdestvenskij/snyatsya-ustalym-sportsmenam.aspx');
+INSERT INTO `reminding` VALUES (17,'2017-11-5',5,1910,'Выткался на озере алый свет зари','http://www.stihi-rus.ru/1/Esenin/19.htm');
 INSERT INTO `author` VALUES (1,'Рождественский Роберт Иванович',1932,1994);
 INSERT INTO `author` VALUES (2,'Тургенев Иван Сергеевич',1818,1883);
 INSERT INTO `author` VALUES (3,'Асадов Эдуард Аркадьевич',1924,2004);
