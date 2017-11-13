@@ -26,7 +26,8 @@ def send_notifications():
         for notification in notifications:
             bot.send_message(
                 SETTINGS.TELEGRAM_OWNER_ID,
-                str(notification)
+                str(notification),
+                reply_markup='Markdown'
             )
     else:
         bot.send_message(
@@ -35,13 +36,27 @@ def send_notifications():
         )
 
 
-t_test = "22:27"
-# TODO: подумать над локализацией времени для различных машин
-# https://stackoverflow.com/questions/13218506/how-to-get-system-timezone-setting-and-pass-it-to-pytz-timezone 
-t_real = "06:00"
-job_time = t_real
+def send_week_notifications():
+    """
+    Уведомление о предстояющих на неделю повторениях
+    """
 
-schedule.every().day.at(job_time).do(send_notifications)
+    bot.send_message(
+        SETTINGS.TELEGRAM_OWNER_ID,
+        "Уведомление на неделю в разработке"
+    )
+
+
+t_test = ["22:27", ]
+# TODO: подумать над локализацией времени для различных машин
+# https://stackoverflow.com/questions/13218506/how-to-get-system-timezone-setting-and-pass-it-to-pytz-timezone
+t_real = ["06:00", "20:00"]
+job_times = t_real
+
+for job_time in job_times:
+    schedule.every().day.at(job_time).do(send_notifications)
+
+schedule.every().monday.at(job_times[0]).do(send_week_notifications)
 
 while True:
     schedule.run_pending()

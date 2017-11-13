@@ -6,7 +6,7 @@ INSERT INTO `reminding` VALUES (4,'2017-10-8',5,1912,'Капли','http://www.st
 INSERT INTO `reminding` VALUES (5,'2017-10-1',8,1827,'Я помню чудное мгновенье','http://www.stihi-rus.ru/Pushkin/stihi/237.htm');
 INSERT INTO `reminding` VALUES (6,'2017-09-24',7,1941,'Жди меня','http://www.stihi-rus.ru/1/simonov/9.htm');
 INSERT INTO `reminding` VALUES (7,'2017-09-17',5,1924,'Письмо к женщине','http://www.stihi-rus.ru/1/Esenin/91.htm');
-INSERT INTO `reminding` VALUES (8,'2017-09-10',5,1923,'Дорогая, сядем рядом','http://stihi-rus.ru/1/Esenin/32.ht');
+INSERT INTO `reminding` VALUES (8,'2017-09-10',5,1923,'Дорогая, сядем рядом','http://stihi-rus.ru/1/Esenin/32.htm');
 INSERT INTO `reminding` VALUES (9,'2017-09-3',1,NULL,'Я в глазах твоих утону, можно','http://stihiolubvi.ru/rozhdestvenskii-robert/ya-v-glazax-tvoix-utonu-mozhno.html');
 INSERT INTO `reminding` VALUES (10,'2017-08-27',5,1925,'Кто я? Что я?','http://www.museum-esenin.ru/tvorchestvo/1178');
 INSERT INTO `reminding` VALUES (11,'2017-08-20',6,1959,'Одиночество','http://www.stihi-rus.ru/1/br/21.htm');

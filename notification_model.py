@@ -6,36 +6,20 @@
 """
 
 import datetime
-from random import randint, choice
 import dateutil.relativedelta as datedelta
-
-# Модель напоминаний с вероятностным сдвигом по дате
-# TODO: подумать надо обеспечением 100% вероятности срабатывания уведомления
-repeat_model_with_shift = (
-    lambda a: a - datedelta.relativedelta(days=1),
-    lambda a: a - datedelta.relativedelta(days=2),
-    lambda a: a - datedelta.relativedelta(days=4),
-    lambda a: a - datedelta.relativedelta(weeks=1) + date_shift(acceptable_error=1),
-    lambda a: a - datedelta.relativedelta(weeks=2) + date_shift(acceptable_error=1),
-    lambda a: a - datedelta.relativedelta(months=1) + date_shift(),
-    lambda a: a - datedelta.relativedelta(months=2) + date_shift(),
-    lambda a: a - datedelta.relativedelta(months=6) + date_shift(),
-    lambda a: a - datedelta.relativedelta(years=1) + date_shift(acceptable_error=0),
-    lambda a: a - datedelta.relativedelta(years=2) + date_shift(acceptable_error=0)
-)
 
 # Модель напоминаний без сдвига по дате
 repeat_model_without_shift = (
-    lambda a: a - datedelta.relativedelta(days=1),
-    lambda a: a - datedelta.relativedelta(days=2),
-    lambda a: a - datedelta.relativedelta(days=4),
-    lambda a: a - datedelta.relativedelta(weeks=1),
-    lambda a: a - datedelta.relativedelta(weeks=2),
-    lambda a: a - datedelta.relativedelta(months=1),
-    lambda a: a - datedelta.relativedelta(months=2),
-    lambda a: a - datedelta.relativedelta(months=6),
-    lambda a: a - datedelta.relativedelta(years=1),
-    lambda a: a - datedelta.relativedelta(years=2)
+    lambda a: (a - datedelta.relativedelta(days=1), 'через день'),
+    lambda a: (a - datedelta.relativedelta(days=2), 'через 2 дня'),
+    lambda a: (a - datedelta.relativedelta(days=4), 'через 4 дня'),
+    lambda a: (a - datedelta.relativedelta(weeks=1), 'через неделю'),
+    lambda a: (a - datedelta.relativedelta(weeks=2), 'через 2 недели'),
+    lambda a: (a - datedelta.relativedelta(months=1), 'через месяц'),
+    lambda a: (a - datedelta.relativedelta(months=2), 'через 2 месяца'),
+    lambda a: (a - datedelta.relativedelta(months=6), 'через 6 месяцев'),
+    lambda a: (a - datedelta.relativedelta(years=1), 'через год'),
+    lambda a: (a - datedelta.relativedelta(years=2), 'через 2 года')
 )
 
 # Тестовая модель напоминаний: напоминания каждый день
@@ -43,13 +27,6 @@ repeat_model_without_shift = (
 test_repeat_model = [lambda a: a - datedelta.relativedelta(days=i) for i in range(32)]
 
 repeat_model = repeat_model_without_shift
-
-
-def date_shift(acceptable_error=3):
-    """Сдвиг даты уведомления на N дней вперед или назад"""
-
-    delta = datedelta.relativedelta(days=randint(0, acceptable_error))
-    return delta if choice('+-') == '+' else -delta
 
 
 def get_all_dates_for_notification():
@@ -64,7 +41,8 @@ class RemindingModel:
 
     def __init__(
             self, caption, year, link, author_name,
-            author_birthday, author_death_day, memo_date
+            author_birthday, author_death_day, memo_date,
+            notification_type
     ):
         self.caption = caption
         self.year = year
@@ -73,13 +51,16 @@ class RemindingModel:
         self.author_birthday = author_birthday
         self.author_death_day = author_death_day
         self.memo_date = memo_date
+        self.notification_type = notification_type
 
     def __str__(self):
         str_model = (
             'Стихотворение: {caption} ({year})\n'
             'Ссылка: {link}\n'
             'Автор: {author_name} ({birthday} - {death_day})\n'
-            'Дата запоминания: {memo_date}')
+            'Дата запоминания: {memo_date}\n'
+            'Стадия повторения: *{notification_type}* после запоминания'
+        )
 
         return str_model.format(
             caption=self.caption,
@@ -88,5 +69,6 @@ class RemindingModel:
             author_name=self.author_name,
             birthday=self.author_birthday,
             death_day=self.author_death_day,
-            memo_date=self.memo_date
+            memo_date=self.memo_date,
+            notification_type=self.notification_type
         )

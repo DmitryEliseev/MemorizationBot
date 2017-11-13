@@ -20,7 +20,7 @@ from config import SETTINGS
 from notification_model import RemindingModel
 from notification_model import get_all_dates_for_notification
 
-# path_to_db = SETTINGS.PATH_TO_DB
+# path_to_db = SETTINGS.PATH_TO_DB_LOCAL
 path_to_db = SETTINGS.PATH_TO_DB_SERVER
 
 _database = SqliteDatabase(path_to_db)
@@ -52,7 +52,7 @@ def get_all_notifications():
 
     notifications = []
 
-    for date in get_all_dates_for_notification():
+    for date, notification_type in get_all_dates_for_notification():
         remindings = Reminding.select().where((Reminding.memorization_date == date))
 
         if remindings:
@@ -65,7 +65,8 @@ def get_all_notifications():
                         reminding.author.name,
                         reminding.author.birthday,
                         reminding.author.death_day,
-                        reminding.memorization_date
+                        reminding.memorization_date,
+                        notification_type
                     )
 
                 )
@@ -99,6 +100,7 @@ def _init_db():
     """
     Создаёт таблицы, если ещё не были созданы
     """
+
     global _is_inited
     _database.connect()
     _database.create_tables([Author, Reminding], safe=True)
