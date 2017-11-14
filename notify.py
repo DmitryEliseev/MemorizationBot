@@ -12,6 +12,7 @@ import time
 
 from config import SETTINGS
 from database import get_all_notifications
+import logs_helper
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG)

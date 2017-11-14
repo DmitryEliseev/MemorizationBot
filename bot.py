@@ -7,13 +7,15 @@
 
 import logging
 import telebot
+
 from config import SETTINGS
 import constants
+import logs_helper
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
-bot = telebot.TeleBot(SETTINGS.TOKEN)
+bot = telebot.TeleBot(SETTINGS.TELEGRAM.TOKEN)
 
 
 @bot.message_handler(commands=['start'])
@@ -25,5 +27,5 @@ def start_msg(message):
 
 
 if __name__ == '__main__':
-    bot.send_message(SETTINGS.TELEGRAM_OWNER_ID, "Бот запущен")
+    bot.send_message(SETTINGS.TELEGRAM.OWNER_ID, "Бот запущен")
     bot.polling(none_stop=True)
