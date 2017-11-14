@@ -48,16 +48,17 @@ def send_week_notifications():
     )
 
 
-t_test = ["22:27", ]
-# TODO: подумать над локализацией времени для различных машин
-# https://stackoverflow.com/questions/13218506/how-to-get-system-timezone-setting-and-pass-it-to-pytz-timezone
-t_real = ["06:00", "20:00"]
-job_times = t_real
+if SETTINGS.TIME_ZONE == "UTC":
+    notification_time_list = ["06:00", "20:00"]
+else:
+    notification_time_list = ["09:00", "23:00"]
 
-for job_time in job_times:
-    schedule.every().day.at(job_time).do(send_notifications)
+# Уведомления о повторениях утром и вечером
+schedule.every().day.at(notification_time_list[0]).do(send_notifications)
+schedule.every().day.at(notification_time_list[1]).do(send_notifications)
 
-schedule.every().monday.at(job_times[0]).do(send_week_notifications)
+# Уведомление о предстоящих на неделю повторениях
+schedule.every().monday.at(notification_time_list[0]).do(send_week_notifications)
 
 while True:
     schedule.run_pending()
