@@ -10,16 +10,16 @@ import dateutil.relativedelta as datedelta
 
 # Модель напоминаний без сдвига по дате
 repeat_model_without_shift = (
-    lambda a: (a - datedelta.relativedelta(days=1), 'через день'),
-    lambda a: (a - datedelta.relativedelta(days=2), 'через 2 дня'),
-    lambda a: (a - datedelta.relativedelta(days=4), 'через 4 дня'),
-    lambda a: (a - datedelta.relativedelta(weeks=1), 'через неделю'),
-    lambda a: (a - datedelta.relativedelta(weeks=2), 'через 2 недели'),
-    lambda a: (a - datedelta.relativedelta(months=1), 'через месяц'),
-    lambda a: (a - datedelta.relativedelta(months=2), 'через 2 месяца'),
-    lambda a: (a - datedelta.relativedelta(months=6), 'через 6 месяцев'),
-    lambda a: (a - datedelta.relativedelta(years=1), 'через год'),
-    lambda a: (a - datedelta.relativedelta(years=2), 'через 2 года')
+    lambda a: {a - datedelta.relativedelta(days=1): 'через день'},
+    lambda a: {a - datedelta.relativedelta(days=2): 'через 2 дня'},
+    lambda a: {a - datedelta.relativedelta(days=4): 'через 4 дня'},
+    lambda a: {a - datedelta.relativedelta(weeks=1): 'через неделю'},
+    lambda a: {a - datedelta.relativedelta(weeks=2): 'через 2 недели'},
+    lambda a: {a - datedelta.relativedelta(months=1): 'через месяц'},
+    lambda a: {a - datedelta.relativedelta(months=2): 'через 2 месяца'},
+    lambda a: {a - datedelta.relativedelta(months=6): 'через 6 месяцев'},
+    lambda a: {a - datedelta.relativedelta(years=1): 'через год'},
+    lambda a: {a - datedelta.relativedelta(years=2): 'через 2 года'}
 )
 
 # Тестовая модель напоминаний: напоминания каждый день
@@ -30,10 +30,28 @@ repeat_model = repeat_model_without_shift
 
 
 def get_all_dates_for_notification():
+    """Список дат для уведомления в текущий день"""
+    dates_for_notification = []
+
     now = datetime.datetime.now().date()
 
     for model in repeat_model:
-        yield model(now)
+        dates_for_notification.append(model(now))
+
+    return dates_for_notification
+
+
+def get_all_dates_for_week_notification():
+    """Список дат для уведомления на неделю вперед"""
+    dates_for_notification = []
+
+    for i in range(7):
+        now = datetime.datetime.now().date()
+        starting_point = now + datedelta.relativedelta(days=i)
+        for model in repeat_model:
+            dates_for_notification.append(model(starting_point))
+
+    return dates_for_notification
 
 
 class RemindingModel:

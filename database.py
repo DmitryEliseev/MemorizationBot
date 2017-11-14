@@ -19,6 +19,7 @@ from config import SETTINGS
 
 from notification_model import RemindingModel
 from notification_model import get_all_dates_for_notification
+from notification_model import get_all_dates_for_week_notification
 
 # path_to_db = SETTINGS.PATH_TO_DB_LOCAL
 path_to_db = SETTINGS.PATH_TO_DB_SERVER
@@ -46,30 +47,66 @@ class Reminding(Model):
         database = _database
 
 
-def get_all_notifications():
+def get_today_notifications():
     if not _is_inited:
         _init_db()
 
     notifications = []
 
-    for date, notification_type in get_all_dates_for_notification():
-        remindings = Reminding.select().where((Reminding.memorization_date == date))
+    dates_for_notification = get_all_dates_for_notification()
 
-        if remindings:
-            for reminding in remindings:
-                notifications.append(
-                    RemindingModel(
-                        reminding.caption,
-                        reminding.year,
-                        reminding.link,
-                        reminding.author.name,
-                        reminding.author.birthday,
-                        reminding.author.death_day,
-                        reminding.memorization_date,
-                        notification_type
-                    )
+    reminding_list = (
+        Reminding
+            .select()
+            .where((Reminding.memorization_date << dates_for_notification.keys()))
+    )
 
-                )
+    for reminding in reminding_list:
+        notifications.append(
+            RemindingModel(
+                reminding.caption,
+                reminding.year,
+                reminding.link,
+                reminding.author.name,
+                reminding.author.birthday,
+                reminding.author.death_day,
+                reminding.memorization_date,
+                dates_for_notification[reminding.memorization_date]
+            )
+
+        )
+
+    return notifications
+
+
+def get_week_notifications():
+    if not _is_inited:
+        _init_db()
+
+    notifications = []
+
+    dates_for_notification = get_all_dates_for_week_notification()
+
+    reminding_list = (
+        Reminding
+            .select()
+            .where((Reminding.memorization_date << dates_for_notification.keys()))
+    )
+
+    for reminding in reminding_list:
+        notifications.append(
+            RemindingModel(
+                reminding.caption,
+                reminding.year,
+                reminding.link,
+                reminding.author.name,
+                reminding.author.birthday,
+                reminding.author.death_day,
+                reminding.memorization_date,
+                dates_for_notification[reminding.memorization_date]
+            )
+
+        )
 
     return notifications
 

@@ -11,7 +11,8 @@ import telebot
 import time
 
 from config import SETTINGS
-from database import get_all_notifications
+from database import get_today_notifications
+from database import get_week_notifications
 import logs_helper
 
 logger = telebot.logger
@@ -21,12 +22,12 @@ bot = telebot.TeleBot(SETTINGS.TOKEN)
 
 
 def send_notifications():
-    notifications = get_all_notifications()
+    notifications = get_today_notifications()
 
     if notifications:
         for notification in notifications:
             bot.send_message(
-                SETTINGS.TELEGRAM_OWNER_ID,
+                SETTINGS.TELEGRAM.OWNER_ID,
                 str(notification),
                 reply_markup='Markdown'
             )
@@ -42,10 +43,18 @@ def send_week_notifications():
     Уведомление о предстояющих на неделю повторениях
     """
 
-    bot.send_message(
-        SETTINGS.TELEGRAM_OWNER_ID,
-        "Уведомление на неделю в разработке"
-    )
+    notifications = get_week_notifications()
+
+    if notifications:
+        bot.send_message(
+            SETTINGS.TELEGRAM.OWNER_ID,
+            '\n\n'.join([str(n) for n in notifications])
+        )
+    else:
+        bot.send_message(
+            SETTINGS.TELEGRAM.OWNER_ID,
+            "На этой неделе нет плановых повторений"
+        )
 
 
 if SETTINGS.TIME_ZONE == "UTC":
