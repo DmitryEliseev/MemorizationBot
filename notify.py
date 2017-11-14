@@ -18,7 +18,7 @@ import logs_helper
 logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG)
 
-bot = telebot.TeleBot(SETTINGS.TOKEN)
+bot = telebot.TeleBot(SETTINGS.TELEGRAM.TOKEN)
 
 
 def send_notifications():
@@ -33,7 +33,7 @@ def send_notifications():
             )
     else:
         bot.send_message(
-            SETTINGS.TELEGRAM_OWNER_ID,
+            SETTINGS.TELEGRAM.OWNER_ID,
             "На сегодня уведомлений нет"
         )
 

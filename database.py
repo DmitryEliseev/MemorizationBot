@@ -21,8 +21,7 @@ from notification_model import RemindingModel
 from notification_model import get_all_dates_for_notification
 from notification_model import get_all_dates_for_week_notification
 
-# path_to_db = SETTINGS.PATH_TO_DB_LOCAL
-path_to_db = SETTINGS.PATH_TO_DB_SERVER
+path_to_db = SETTINGS.PATH_TO_DB
 
 _database = SqliteDatabase(path_to_db)
 
