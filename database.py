@@ -7,6 +7,7 @@
 
 import os
 import datetime
+import logging
 
 from peewee import Model
 from peewee import SqliteDatabase
@@ -20,6 +21,8 @@ from config import SETTINGS
 from notification_model import RemindingModel
 from notification_model import get_all_dates_for_notification
 from notification_model import get_all_dates_for_week_notification
+
+import logs_helper
 
 path_to_db = SETTINGS.PATH_TO_DB
 
@@ -57,7 +60,7 @@ def get_today_notifications():
     reminding_list = (
         Reminding
             .select()
-            .where((Reminding.memorization_date << dates_for_notification.keys()))
+            .where((Reminding.memorization_date << list(dates_for_notification.keys())))
     )
 
     for reminding in reminding_list:
@@ -89,7 +92,7 @@ def get_week_notifications():
     reminding_list = (
         Reminding
             .select()
-            .where((Reminding.memorization_date << dates_for_notification.keys()))
+            .where((Reminding.memorization_date << list(dates_for_notification.keys())))
     )
 
     for reminding in reminding_list:
@@ -140,9 +143,9 @@ def _init_db():
     global _is_inited
     _database.connect()
     _database.create_tables([Author, Reminding], safe=True)
-    print("БД создана")
+    logging.info("БД создана")
     full_db()
-    print("БД наполнена")
+    logging.info("БД наполнена")
     _is_inited = True
 
 
