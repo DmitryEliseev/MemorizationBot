@@ -114,6 +114,8 @@ if SETTINGS.TEST_MODE:
 else:
     schedule.every().monday.at(notification_time_list[0]).do(send_week_notifications)
 
+bot.send_message(SETTINGS.TELEGRAM.OWNER_ID, "Бот запущен")
+
 while True:
     schedule.run_pending()
     time.sleep(1)
