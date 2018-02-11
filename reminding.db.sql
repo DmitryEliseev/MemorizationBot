@@ -19,6 +19,7 @@ INSERT INTO `reminding` VALUES (17,'2017-11-5',5,1910,'Выткался на о�
 INSERT INTO `reminding` VALUES (18,'2017-11-12',1,1973,'Мгновения','https://m.rupoem.ru/poets/rozhdestvenskij/ne-dumaj-o');
 INSERT INTO `reminding` VALUES (19,'2017-11-19',3,1966,'Что такое счастье?','http://www.stihi-rus.ru/1/Asadov/134.htm');
 INSERT INTO `reminding` VALUES (20, '2018-01-24',4,1838,'Дума','http://www.stihi-rus.ru/1/Lermontov/32.htm');
+INSERT INTO `reminding` VALUES (21, '2018-02-11',3,1967,'Аптека-счастья', 'http://www.stihi-rus.ru/1/Asadov/1.htm');
 INSERT INTO `author` VALUES (1,'Рождественский Роберт Иванович',1932,1994);
 INSERT INTO `author` VALUES (2,'Тургенев Иван Сергеевич',1818,1883);
 INSERT INTO `author` VALUES (3,'Асадов Эдуард Аркадьевич',1924,2004);
