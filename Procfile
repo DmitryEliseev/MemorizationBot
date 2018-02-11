@@ -1,1 +1,0 @@
-bot: python3 notify.py
