@@ -24,7 +24,7 @@ telebot.logger.setLevel(logging.DEBUG)
 bot = telebot.TeleBot(SETTINGS.TELEGRAM.TOKEN)
 
 
-def send_notifications():
+def send_notifications(second_time=False):
     notifications = get_today_notifications()
 
     if notifications:
@@ -41,10 +41,12 @@ def send_notifications():
             disable_web_page_preview=True
         )
     else:
-        bot.send_message(
-            SETTINGS.TELEGRAM.OWNER_ID,
-            "На сегодня уведомлений нет"
-        )
+        # Если повторений нет, то не уведомлять об этом второй раз
+        if not second_time:
+            bot.send_message(
+                SETTINGS.TELEGRAM.OWNER_ID,
+                "На сегодня уведомлений нет"
+            )
 
 
 def send_week_notifications():
@@ -93,7 +95,7 @@ else:
 try:
     # Уведомления о повторениях утром и вечером
     schedule.every().day.at(notification_time_list[0]).do(send_notifications)
-    schedule.every().day.at(notification_time_list[1]).do(send_notifications)
+    schedule.every().day.at(notification_time_list[1]).do(send_notifications, second_time=True)
 
     # Уведомление о предстоящих на неделю повторениях
     if SETTINGS.TEST_MODE:
@@ -121,7 +123,9 @@ try:
         schedule.run_pending()
         time.sleep(1)
 except Exception as ex:
-    logging.info("Бот прекратил работу: {}".format(repr(ex)))
+    logging.error("Произошла ошибка: {}".format(repr(ex)))
     raise ex
 finally:
-    bot.send_message(SETTINGS.TELEGRAM.OWNER_ID, "Бот прекратил свою работу")
+    final_msg = "Бот прекратил свою работу"
+    logging.info(final_msg)
+    bot.send_message(SETTINGS.TELEGRAM.OWNER_ID, final_msg)
