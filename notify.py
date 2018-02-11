@@ -90,32 +90,38 @@ else:
     else:
         notification_time_list = ["09:00", "23:00"]
 
-# Уведомления о повторениях утром и вечером
-schedule.every().day.at(notification_time_list[0]).do(send_notifications)
-schedule.every().day.at(notification_time_list[1]).do(send_notifications)
+try:
+    # Уведомления о повторениях утром и вечером
+    schedule.every().day.at(notification_time_list[0]).do(send_notifications)
+    schedule.every().day.at(notification_time_list[1]).do(send_notifications)
 
-# Уведомление о предстоящих на неделю повторениях
-if SETTINGS.TEST_MODE:
-    current_weekday = datetime.datetime.now().weekday()
-    if current_weekday == 0:
-        schedule.every().monday.at(notification_time_list[0]).do(send_week_notifications)
-    elif current_weekday == 1:
-        schedule.every().tuesday.at(notification_time_list[0]).do(send_week_notifications)
-    elif current_weekday == 2:
-        schedule.every().wednesday.at(notification_time_list[0]).do(send_week_notifications)
-    elif current_weekday == 3:
-        schedule.every().thursday.at(notification_time_list[0]).do(send_week_notifications)
-    elif current_weekday == 4:
-        schedule.every().friday.at(notification_time_list[0]).do(send_week_notifications)
-    elif current_weekday == 5:
-        schedule.every().saturday.at(notification_time_list[0]).do(send_week_notifications)
+    # Уведомление о предстоящих на неделю повторениях
+    if SETTINGS.TEST_MODE:
+        current_weekday = datetime.datetime.now().weekday()
+        if current_weekday == 0:
+            schedule.every().monday.at(notification_time_list[0]).do(send_week_notifications)
+        elif current_weekday == 1:
+            schedule.every().tuesday.at(notification_time_list[0]).do(send_week_notifications)
+        elif current_weekday == 2:
+            schedule.every().wednesday.at(notification_time_list[0]).do(send_week_notifications)
+        elif current_weekday == 3:
+            schedule.every().thursday.at(notification_time_list[0]).do(send_week_notifications)
+        elif current_weekday == 4:
+            schedule.every().friday.at(notification_time_list[0]).do(send_week_notifications)
+        elif current_weekday == 5:
+            schedule.every().saturday.at(notification_time_list[0]).do(send_week_notifications)
+        else:
+            schedule.every().sunday.at(notification_time_list[0]).do(send_week_notifications)
     else:
-        schedule.every().sunday.at(notification_time_list[0]).do(send_week_notifications)
-else:
-    schedule.every().monday.at(notification_time_list[0]).do(send_week_notifications)
+        schedule.every().monday.at(notification_time_list[0]).do(send_week_notifications)
 
-bot.send_message(SETTINGS.TELEGRAM.OWNER_ID, "Бот запущен")
+    bot.send_message(SETTINGS.TELEGRAM.OWNER_ID, "Бот запущен")
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+except Exception as ex:
+    logging.info("Бот прекратил работу: {}".format(repr(ex)))
+    raise ex
+finally:
+    bot.send_message(SETTINGS.TELEGRAM.OWNER_ID, "Бот прекратил свою работу")
