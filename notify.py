@@ -19,7 +19,7 @@ from database import get_week_notifications
 import logs_helper
 
 logger = telebot.logger
-telebot.logger.setLevel(logging.DEBUG)
+telebot.logger.setLevel(logging.INFO)
 
 bot = telebot.TeleBot(SETTINGS.TELEGRAM.TOKEN)
 
@@ -131,3 +131,7 @@ def notification():
         final_msg = "Бот прекратил свою работу"
         logging.info(final_msg)
         bot.send_message(SETTINGS.TELEGRAM.OWNER_ID, final_msg)
+        
+
+if __name__ == '__main__':
+    notification()
