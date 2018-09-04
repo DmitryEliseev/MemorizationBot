@@ -1,0 +1,21 @@
+# БД
+*.db
+
+# Конфигурации
+settings.json
+
+# Mac
+.DS_Store
+
+# JetBrains
+.idea/
+
+# Python
+__pycache__/
+
+# Логи
+logs.log
+
+# Эксперименты
+trello_module/
+legacy/
