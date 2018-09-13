@@ -11,12 +11,10 @@ import logging
 
 from peewee import Model
 from peewee import SqliteDatabase
-from peewee import CharField
-from peewee import DateField
-from peewee import BigIntegerField
+from peewee import CharField, DateField, BigIntegerField
 from peewee import ForeignKeyField
 
-from config import SETTINGS
+from config import config
 
 from notification_model import RemindingModel
 from notification_model import get_all_dates_for_notification
@@ -24,7 +22,7 @@ from notification_model import get_all_dates_for_week_notification
 
 import logs_helper
 
-path_to_db = SETTINGS.PATH_TO_DB
+path_to_db = config['path_to_db']
 
 _database = SqliteDatabase(path_to_db)
 

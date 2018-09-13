@@ -8,8 +8,6 @@
 import datetime
 import dateutil.relativedelta as datedelta
 
-from config import SETTINGS
-
 # Модель напоминаний без сдвига по дате
 classic_repeat_model = [
     lambda a: (a - datedelta.relativedelta(days=1), 'через день'),
@@ -24,15 +22,7 @@ classic_repeat_model = [
     lambda a: (a - datedelta.relativedelta(years=2), 'через 2 года')
 ]
 
-# Тестовая модель напоминаний: напоминания каждый день в течение 62 дней после запоминания
-test_repeat_model = [
-    (lambda i: lambda a: (a - datedelta.relativedelta(days=i), 'через {} день'.format(i)))(i) for i in range(100)
-]
-
-if SETTINGS.TEST_MODE:
-    repeat_model = test_repeat_model
-else:
-    repeat_model = classic_repeat_model
+repeat_model = classic_repeat_model
 
 
 def get_all_dates_for_notification():

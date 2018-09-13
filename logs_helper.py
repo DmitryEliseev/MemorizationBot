@@ -7,7 +7,7 @@
 
 import sys
 import logging
-from config import SETTINGS
+from config import config
 
 
 def init_logging():
@@ -25,7 +25,7 @@ def init_logging():
     logger = logging.getLogger()  # RootLogger
     logger.setLevel(logging.INFO)
 
-    file_handler = logging.FileHandler(SETTINGS.LOGS_PATH, 'a', 'utf-8')
+    file_handler = logging.FileHandler(config['path_to_log'], 'a', 'utf-8')
     file_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s  %(funcName)s at %(module)s:%(lineno)d %(message)s',
         datefmt=datetime_format

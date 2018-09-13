@@ -8,14 +8,16 @@
 import logging
 import telebot
 
-from config import SETTINGS
+from config import config
 import constants
 import logs_helper
 
 logger = telebot.logger
-telebot.logger.setLevel(logging.INFO)
+telebot.logger.setLevel(logging.DEBUG)
 
-bot = telebot.TeleBot(SETTINGS.TELEGRAM.TOKEN)
+tg_token = config['telegram_token']
+tg_admin_id = config['telegram_admin_id']
+bot = telebot.TeleBot(tg_token)
 
 
 @bot.message_handler(commands=['start'])
@@ -26,6 +28,17 @@ def start_msg(message):
     )
 
 
+@bot.message_handler(commands=['list'])
+def list_msg(message):
+    """Все стихотворения"""
+    pass
+
+
+@bot.message_handler(commands=['detlist'])
+def list_msg(message):
+    """Все стихотворения с детальной информацией"""
+    pass
+
+
 if __name__ == '__main__':
-    bot.send_message(SETTINGS.TELEGRAM.OWNER_ID, "Бот запущен")
-    bot.polling(none_stop=True)
+    bot.send_message(tg_admin_id, "Бот запущен")
