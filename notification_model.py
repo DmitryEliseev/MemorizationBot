@@ -8,6 +8,9 @@
 import datetime
 import dateutil.relativedelta as datedelta
 
+import logging
+import logging.config
+
 # Модель напоминаний без сдвига по дате
 classic_repeat_model = [
     lambda a: (a - datedelta.relativedelta(days=1), 'через день'),
@@ -73,7 +76,25 @@ class RemindingModel:
     def short_author_name(self):
         full_author_name = self.author_name
         surname, name, second_name = full_author_name.split()
-        return '{} {}. {}.'.format(surname, name[0], second_name[0])
+        return '{} {}.{}.'.format(surname, name[0], second_name[0])
+
+    def __str__(self):
+        str_model = (
+            '{author_name} ({birthday}-{death_day}) - '
+            '{caption} ({year}). Выучено {memo_date}. '
+            'Повторение {notification_type}. {link}'
+        )
+
+        return str_model.format(
+            caption=self.caption,
+            year=self.year,
+            link=self.link,
+            author_name=self.author_name,
+            birthday=self.author_birthday,
+            death_day=self.author_death_day,
+            memo_date=self.memo_date,
+            notification_type=self.notification_type
+        )
 
     def short_str(self):
         str_model = (
@@ -92,20 +113,15 @@ class RemindingModel:
             memo_date=self.memo_date,
         )
 
-    def __str__(self):
-        str_model = (
-            '{author_name} ({birthday}-{death_day}) - '
-            '{caption} ({year}). Выучено {memo_date}. '
-            'Повторение {notification_type}. {link}'
-        )
+    def author_poem_name_str(self):
+        return '{} {}'.format(self.short_author_name(), self.caption)
 
+    def author_poem_year_link_date_str(self):
+        str_model = '{} {} ({}). Выучено {}. {link}'
         return str_model.format(
-            caption=self.caption,
-            year=self.year,
-            link=self.link,
-            author_name=self.author_name,
-            birthday=self.author_birthday,
-            death_day=self.author_death_day,
-            memo_date=self.memo_date,
-            notification_type=self.notification_type
+            self.short_author_name(),
+            self.caption,
+            self.year,
+            self.memo_date,
+            self.link
         )

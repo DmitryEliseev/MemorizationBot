@@ -5,21 +5,21 @@
 Обработчик уведомлений о повторении
 """
 
-import logging
+import time
 import schedule
 import telebot
 
-import time
-import datetime
-import dateutil.relativedelta as datedelta
-
-from config import config
 from database import get_today_notifications
 from database import get_week_notifications
-import logs_helper
 
-logger = telebot.logger
-telebot.logger.setLevel(logging.INFO)
+import logging
+import logging.config
+
+from config import config
+
+logging.config.fileConfig('log_config.ini')
+logger = logging.getLogger('myLogger')
+telebot.logger.setLevel(logging.DEBUG)
 
 tg_token = config['telegram_token']
 tg_admin_id = config['telegram_admin_id']

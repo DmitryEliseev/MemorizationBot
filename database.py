@@ -8,6 +8,7 @@
 import os
 import datetime
 import logging
+import logging.config
 
 from peewee import Model
 from peewee import SqliteDatabase
@@ -20,10 +21,10 @@ from notification_model import RemindingModel
 from notification_model import get_all_dates_for_notification
 from notification_model import get_all_dates_for_week_notification
 
-import logs_helper
+logging.config.fileConfig('log_config.ini')
+logger = logging.getLogger('myLogger')
 
 path_to_db = config['path_to_db']
-
 _database = SqliteDatabase(path_to_db)
 
 
@@ -48,6 +49,8 @@ class Reminding(Model):
 
 
 def get_today_notifications():
+    """Уведомления на сегодня"""
+
     if not _is_inited:
         _init_db()
 
@@ -80,6 +83,8 @@ def get_today_notifications():
 
 
 def get_week_notifications():
+    """Уведомления на неделю"""
+
     if not _is_inited:
         _init_db()
 
@@ -123,7 +128,29 @@ def insert_notification(user_id, caption, link=None):
     )
 
 
+def get_all_poems():
+    if not _is_inited:
+        _init_db()
+
+    notifications = []
+    for reminding in Reminding.select():
+        notifications.append(
+            RemindingModel(
+                reminding.caption,
+                reminding.year,
+                reminding.link,
+                reminding.author.name,
+                reminding.author.birthday,
+                reminding.author.death_day,
+                reminding.memorization_date,
+                reminding.memorization_date
+            )
+        )
+
+
 def full_db():
+    """Заполнение БД"""
+
     # Чтение данных из файла
     with open('reminding.db.sql', 'r', encoding="utf-8") as file:
         insert_commands = file.read().split(';')[1:-2]
@@ -134,9 +161,7 @@ def full_db():
 
 
 def _init_db():
-    """
-    Создаёт таблицы, если ещё не были созданы
-    """
+    """Создание БД, если ее нет"""
 
     global _is_inited
     _database.connect()
