@@ -2,7 +2,7 @@
 *.db
 
 # Конфигурации
-settings.json
+settings.ini
 
 # Mac
 .DS_Store
@@ -19,3 +19,10 @@ logs.log
 # Эксперименты
 trello_module/
 legacy/
+
+# Virualenv
+memorizationbot/
+
+# Сертификаты
+*.pem
+*.crt
