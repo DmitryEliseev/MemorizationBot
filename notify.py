@@ -15,14 +15,14 @@ from database import get_week_notifications
 import logging
 import logging.config
 
-from config import config
+from config import SETTINGS
 
 logging.config.fileConfig('log_config.ini')
 logger = logging.getLogger('myLogger')
 telebot.logger.setLevel(logging.DEBUG)
 
-tg_token = config['telegram_token']
-tg_admin_id = config['telegram_admin_id']
+tg_token = SETTINGS['telegram_token']
+tg_admin_id = SETTINGS['telegram_admin_id']
 
 bot = telebot.TeleBot(tg_token)
 

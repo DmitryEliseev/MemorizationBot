@@ -9,7 +9,7 @@ import logging
 import logging.config
 import telebot
 
-from config import config
+from config import SETTINGS
 import constants
 
 from database import get_all_poems
@@ -18,8 +18,8 @@ logging.config.fileConfig('log_config.ini')
 logger = logging.getLogger('myLogger')
 telebot.logger.setLevel(logging.DEBUG)
 
-tg_token = config['telegram_token']
-tg_admin_id = config['telegram_admin_id']
+tg_token = SETTINGS['telegram_token']
+tg_admin_id = SETTINGS['telegram_admin_id']
 
 bot = telebot.TeleBot(tg_token)
 
