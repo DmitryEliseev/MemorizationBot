@@ -47,13 +47,20 @@ class Reminding(Model):
         database = _database
 
 
+def init_db(func):
+    def wrapper(*args, **kwargs):
+        if not _is_inited:
+            _init_db()
+
+        result = func(*args, **kwargs)
+        return result
+
+    return wrapper
+
+
+@init_db
 def get_coming_notifications(days=None):
     """Уведомления на сегодня"""
-
-    if not _is_inited:
-        _init_db()
-
-    notifications = []
 
     dates_for_notification = get_all_dates_for_notification(days=days)
 
@@ -63,6 +70,7 @@ def get_coming_notifications(days=None):
             .where((Reminding.memorization_date << list(dates_for_notification.keys())))
     )
 
+    notifications = []
     for reminding in reminding_list:
         notifications.append(
             RemindingModel(
@@ -81,10 +89,8 @@ def get_coming_notifications(days=None):
     return notifications
 
 
+@init_db
 def insert_notification(user_id, caption, link=None):
-    if not _is_inited:
-        _init_db()
-
     Reminding.create(
         user_id=user_id,
         memorization_date=datetime.datetime.now().date(),
@@ -93,10 +99,8 @@ def insert_notification(user_id, caption, link=None):
     )
 
 
+@init_db
 def get_all_poems():
-    if not _is_inited:
-        _init_db()
-
     notifications = []
     for reminding in Reminding.select():
         notifications.append(
