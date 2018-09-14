@@ -14,7 +14,7 @@ from telebot.types import Update
 import cherrypy
 from cherrypy import request
 
-from database import get_all_poems
+from database import get_all_poems, get_coming_notifications
 from config import SETTINGS
 import constants
 
@@ -35,12 +35,12 @@ def start_msg(message):
 
 
 @bot.message_handler(commands=['list'])
-def list_msg(message):
+def list_all_poems(message):
     """Все стихотворения"""
 
     poems = [
-        '{}. {}'.format(idx + 1, poem.author_poem_name_str()) for
-        idx, poem in enumerate(get_all_poems())
+        '{}. {}'.format(idx + 1, poem.author_poem_name_str())
+        for idx, poem in enumerate(get_all_poems())
     ]
     bot.send_message(
         message.chat.id,
@@ -49,7 +49,7 @@ def list_msg(message):
 
 
 @bot.message_handler(commands=['detlist'])
-def list_msg(message):
+def list_all_poems_detailed(message):
     """Все стихотворения с детальной информацией"""
 
     poems = [poem.author_poem_year_link_date_str() for poem in get_all_poems()]
@@ -57,6 +57,16 @@ def list_msg(message):
         message.chat.id,
         '\n\n'.join(poems)
     )
+
+
+@bot.message_handler(commands=['nextmonth'])
+def list_next_30_days_notifications(message):
+    poems = [str(poem) for poem in get_coming_notifications(days=30)]
+
+    if poems:
+        bot.send_message(message.chat.id, '\n\n'.join(poems))
+    else:
+        bot.send_message(message.chat.id, 'Уведомлений на ближайшие 30 дней нет')
 
 
 class WebhookServer:

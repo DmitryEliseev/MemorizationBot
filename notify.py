@@ -9,8 +9,7 @@ import time
 import schedule
 import telebot
 
-from database import get_today_notifications
-from database import get_week_notifications
+from database import get_coming_notifications
 
 import logging
 import logging.config
@@ -28,7 +27,7 @@ bot = telebot.TeleBot(tg_token)
 
 
 def send_notifications(second_time=False):
-    notifications = get_today_notifications()
+    notifications = get_coming_notifications()
 
     if notifications:
         message = (
@@ -57,7 +56,7 @@ def send_week_notifications():
     Уведомление о предстояющих на неделю повторениях
     """
 
-    notifications = get_week_notifications()
+    notifications = get_coming_notifications(days=7)
 
     if notifications:
         message = (

@@ -19,7 +19,6 @@ from config import SETTINGS
 
 from notification_model import RemindingModel
 from notification_model import get_all_dates_for_notification
-from notification_model import get_all_dates_for_week_notification
 
 logging.config.fileConfig('log_config.ini')
 logger = logging.getLogger('myLogger')
@@ -48,7 +47,7 @@ class Reminding(Model):
         database = _database
 
 
-def get_today_notifications():
+def get_coming_notifications(days=None):
     """Уведомления на сегодня"""
 
     if not _is_inited:
@@ -56,41 +55,7 @@ def get_today_notifications():
 
     notifications = []
 
-    dates_for_notification = get_all_dates_for_notification()
-
-    reminding_list = (
-        Reminding
-            .select()
-            .where((Reminding.memorization_date << list(dates_for_notification.keys())))
-    )
-
-    for reminding in reminding_list:
-        notifications.append(
-            RemindingModel(
-                reminding.caption,
-                reminding.year,
-                reminding.link,
-                reminding.author.name,
-                reminding.author.birthday,
-                reminding.author.death_day,
-                reminding.memorization_date,
-                dates_for_notification[reminding.memorization_date]
-            )
-
-        )
-
-    return notifications
-
-
-def get_week_notifications():
-    """Уведомления на неделю"""
-
-    if not _is_inited:
-        _init_db()
-
-    notifications = []
-
-    dates_for_notification = get_all_dates_for_week_notification()
+    dates_for_notification = get_all_dates_for_notification(days=days)
 
     reminding_list = (
         Reminding

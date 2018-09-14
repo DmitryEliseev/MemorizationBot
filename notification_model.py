@@ -25,29 +25,24 @@ classic_repeat_model = [
 repeat_model = classic_repeat_model
 
 
-def get_all_dates_for_notification():
-    """Список дат для уведомления в текущий день"""
+def get_all_dates_for_notification(days=None):
+    """Список дат для уведомлений"""
 
     dates_for_notification = {}
     now = datetime.datetime.now().date()
 
-    for model in repeat_model:
-        notification_date, message = model(now)
-        dates_for_notification[notification_date] = message
+    # Предстоящие уведомления на N дней
 
-    return dates_for_notification
-
-
-def get_all_dates_for_week_notification():
-    """Список дат для уведомления на неделю вперед"""
-
-    dates_for_notification = {}
-
-    for i in range(7):
-        now = datetime.datetime.now().date()
-        starting_point = now + datedelta.relativedelta(days=i)
+    if days:
+        for i in range(days):
+            starting_point = now + datedelta.relativedelta(days=i)
+            for model in repeat_model:
+                notification_date, message = model(starting_point)
+                dates_for_notification[notification_date] = message
+    # Уведомления на текущий год
+    else:
         for model in repeat_model:
-            notification_date, message = model(starting_point)
+            notification_date, message = model(now)
             dates_for_notification[notification_date] = message
 
     return dates_for_notification
@@ -75,29 +70,14 @@ class RemindingModel:
         surname, name, second_name = full_author_name.split()
         return '{} {}.{}.'.format(surname, name[0], second_name[0])
 
+    def format_memo_date(self):
+        return self.memo_date.strftime('%d.%m.%Y')
+
     def __str__(self):
         str_model = (
-            '{author_name} ({birthday}-{death_day}) - '
-            '{caption} ({year}). Выучено {memo_date}. '
-            'Повторение {notification_type}. {link}'
-        )
-
-        return str_model.format(
-            caption=self.caption,
-            year=self.year,
-            link=self.link,
-            author_name=self.author_name,
-            birthday=self.author_birthday,
-            death_day=self.author_death_day,
-            memo_date=self.memo_date,
-            notification_type=self.notification_type
-        )
-
-    def short_str(self):
-        str_model = (
-            '{author_name} ({birthday}-{death_day}) - '
-            '{caption} ({year}). Выучено {memo_date}. '
-            '{link}'
+            '{author_name} ({birthday}-{death_day}). '
+            '{caption} ({year}). Выучено {memo_date}, '
+            'повторение {notification_type}. {link}'
         )
 
         return str_model.format(
@@ -107,7 +87,24 @@ class RemindingModel:
             author_name=self.short_author_name(),
             birthday=self.author_birthday,
             death_day=self.author_death_day,
-            memo_date=self.memo_date,
+            memo_date=self.format_memo_date(),
+            notification_type=self.notification_type
+        )
+
+    def short_str(self):
+        str_model = (
+            '{author_name} ({birthday}-{death_day}) - '
+            '{caption} ({year}). Выучено {memo_date}. {link}'
+        )
+
+        return str_model.format(
+            caption=self.caption,
+            year=self.year,
+            link=self.link,
+            author_name=self.short_author_name(),
+            birthday=self.author_birthday,
+            death_day=self.author_death_day,
+            memo_date=self.format_memo_date(),
         )
 
     def author_poem_name_str(self):
@@ -119,6 +116,6 @@ class RemindingModel:
             self.short_author_name(),
             self.caption,
             self.year,
-            self.memo_date,
+            self.format_memo_date(),
             self.link
         )
