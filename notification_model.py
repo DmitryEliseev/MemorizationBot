@@ -114,7 +114,7 @@ class RemindingModel:
         return '{} {}'.format(self.short_author_name(), self.caption)
 
     def author_poem_year_link_date_str(self):
-        str_model = '{} {} ({}). Выучено {}. {link}'
+        str_model = '{} {} ({}). Выучено {}. {}'
         return str_model.format(
             self.short_author_name(),
             self.caption,

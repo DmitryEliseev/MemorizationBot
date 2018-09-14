@@ -146,6 +146,7 @@ def get_all_poems():
                 reminding.memorization_date
             )
         )
+    return notifications
 
 
 def full_db():
