@@ -24,8 +24,8 @@ from notification_model import get_all_dates_for_week_notification
 logging.config.fileConfig('log_config.ini')
 logger = logging.getLogger('myLogger')
 
-path_to_db = SETTINGS['path_to_db']
-_database = SqliteDatabase(path_to_db)
+PATH_TO_DB = SETTINGS['path_to_db']
+_database = SqliteDatabase(PATH_TO_DB)
 
 
 class Author(Model):
@@ -166,13 +166,13 @@ def _init_db():
     global _is_inited
     _database.connect()
     _database.create_tables([Author, Reminding], safe=True)
-    logging.info("БД создана")
+    logger.info("БД создана")
     full_db()
-    logging.info("БД наполнена")
+    logger.info("БД наполнена")
     _is_inited = True
 
 
-if os.path.isfile(path_to_db):
+if os.path.isfile(PATH_TO_DB):
     _is_inited = True
 else:
     _is_inited = False

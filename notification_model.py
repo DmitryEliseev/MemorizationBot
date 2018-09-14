@@ -8,10 +8,7 @@
 import datetime
 import dateutil.relativedelta as datedelta
 
-import logging
-import logging.config
-
-# Модель напоминаний без сдвига по дате
+# Модель напоминаний
 classic_repeat_model = [
     lambda a: (a - datedelta.relativedelta(days=1), 'через день'),
     lambda a: (a - datedelta.relativedelta(days=2), 'через 2 дня'),
