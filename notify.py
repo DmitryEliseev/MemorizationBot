@@ -26,7 +26,7 @@ tg_admin_id = SETTINGS['telegram_admin_id']
 bot = telebot.TeleBot(tg_token)
 
 
-def send_notifications(second_time=False):
+def send_notifications():
     notifications = get_coming_notifications()
 
     if notifications:
@@ -42,13 +42,6 @@ def send_notifications(second_time=False):
             parse_mode='Markdown',
             disable_web_page_preview=True
         )
-    else:
-        # Если повторений нет, то не уведомлять об этом второй раз
-        if not second_time:
-            bot.send_message(
-                tg_admin_id,
-                "На сегодня уведомлений нет"
-            )
 
 
 def send_week_notifications():
@@ -81,12 +74,12 @@ def send_week_notifications():
 def notification():
     try:
         # Уведомления о повторениях утром и вечером
-        schedule.every().day.at("09:00").do(send_notifications)
-        schedule.every().day.at("23:00").do(send_notifications, second_time=True)
+        schedule.every().day.at("04:00").do(send_notifications)
+        schedule.every().day.at("19:00").do(send_notifications)
 
-        schedule.every().monday.at("09:00").do(send_week_notifications)
+        schedule.every().monday.at("04:00").do(send_week_notifications)
 
-        bot.send_message(tg_admin_id, "Бот запущен")
+        bot.send_message(tg_admin_id, "Ежедневные уведомления включены")
 
         while True:
             schedule.run_pending()
