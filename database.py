@@ -89,13 +89,67 @@ def get_coming_notifications(days=None):
     return notifications
 
 
+class InsertPoemException(Exception):
+    pass
+
+
+class InsertAuthorException(Exception):
+    pass
+
+
 @init_db
-def insert_notification(user_id, caption, link=None):
+def check_author_existance(author_surname):
+    """Проверка на наличие автора в БД"""
+
+    for author in Author.select():
+        if author_surname.lower() == author.name.split()[0].lower():
+            return author
+
+
+@init_db
+def insert_poem(author_surname, caption, year, link):
+    """Занесенив в БД стихотворения"""
+
+    author = check_author_existance(author_surname)
+    if not author:
+        raise InsertPoemException('Не найден автор. Воспользуйтесь командой /addauthor')
+
+    try:
+        int(year)
+    except ValueError:
+        raise InsertPoemException('Неверный тип года написания стихотворения')
+
     Reminding.create(
-        user_id=user_id,
+        author=author,
         memorization_date=datetime.datetime.now().date(),
+        year=int(year),
         caption=caption,
         link=link
+    )
+
+
+@init_db
+def insert_author(author_fio, year_of_birthday, year_of_death):
+    """Занесение в БД автора"""
+
+    author_surname = author_fio.split()[0].strip()
+    if check_author_existance(author_surname):
+        raise InsertAuthorException('Данный автор уже есть в базе данных')
+
+    try:
+        int(year_of_birthday)
+    except ValueError:
+        raise InsertAuthorException('Неверный тип года рождения')
+
+    try:
+        int(year_of_death)
+    except ValueError:
+        raise InsertAuthorException('Неверный тип года смерти')
+
+    Author.create(
+        name=author_fio,
+        birthday=int(year_of_birthday),
+        death_day=int(year_of_death)
     )
 
 

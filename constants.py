@@ -14,7 +14,15 @@ MSG_START_COMMAND = (
     "с помощью команду /delete <номер уведомления>"
 )
 MSG_ADD_COMMAND = "Введите то, что хотите запомнить"
-MSG_SUCCESS_ADDING_NOTIFICATION = 'Напоминание{}успешно добавлено'
+MSG_SUCCESS_AUTHOR_INSERT = 'Автор успешно добавлено'
+MSG_SUCCESS_POEM_INSERT = 'Стихотворение успешно добавлено'
 
 ERROR_WRONG_ADD_FORMAT = 'При добавлении напоминания был нарушен формат: /add <напоминание>#<ссылка>'
-
+ERROR_WRONG_ADD_AUTHOR_FORMAT = (
+    'Неверный формат. Введите '
+    '/addauthor <ФИО автора>;<дата рождения>;<дата смерти>'
+)
+ERROR_WRONG_ADD_POEM_FORMAT = (
+    'Неверный формат. Введите '
+    '/addpoem <фамилия автора>;<название стихотворения>;<дата написания>;<ссылка>'
+)

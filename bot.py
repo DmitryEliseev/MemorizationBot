@@ -14,7 +14,12 @@ from telebot.types import Update
 import cherrypy
 from cherrypy import request
 
-from database import get_all_poems, get_coming_notifications
+from database import get_all_poems
+from database import get_coming_notifications
+from database import insert_author
+from database import insert_poem
+from database import InsertAuthorException, InsertPoemException
+
 from config import SETTINGS
 import constants
 
@@ -55,7 +60,8 @@ def list_all_poems_detailed(message):
     poems = [poem.author_poem_year_link_date_str() for poem in get_all_poems()]
     bot.send_message(
         message.chat.id,
-        '\n\n'.join(poems)
+        '\n\n'.join(poems),
+        disable_web_page_preview=True
     )
 
 
@@ -67,6 +73,42 @@ def list_next_30_days_notifications(message):
         bot.send_message(message.chat.id, '\n\n'.join(poems))
     else:
         bot.send_message(message.chat.id, 'Уведомлений на ближайшие 30 дней нет')
+
+
+@bot.message_handler(commands=['addauthor'])
+def add_author(message):
+    """Добавление автора в БД"""
+
+    msg_text = message.text[len('/addauthor'):]
+    try:
+        author, date_of_birthday, date_of_death = msg_text.split(';')
+        insert_author(author.strip(), date_of_birthday.strip(), date_of_death.strip())
+        bot.send_message(message.chat.id, constants.MSG_SUCCESS_AUTHOR_INSERT)
+    except ValueError:
+        bot.send_message(
+            message.chat.id,
+            constants.ERROR_WRONG_ADD_AUTHOR_FORMAT
+        )
+    except InsertAuthorException as e:
+        bot.send_message(message.chat.id, e)
+
+
+@bot.message_handler(commands=['addpoem'])
+def add_poem(message):
+    """Добавление стихотворения в БД"""
+
+    msg_text = message.text[len('/addpoem'):]
+    try:
+        surname, caption, year, link = msg_text.split(';')
+        insert_poem(surname.strip(), caption.strip(), year.strip(), link.strip())
+        bot.send_message(message.chat.id, constants.MSG_SUCCESS_POEM_INSERT)
+    except ValueError:
+        bot.send_message(
+            message.chat.id,
+            constants.ERROR_WRONG_ADD_POEM_FORMAT
+        )
+    except InsertPoemException as e:
+        bot.send_message(message.chat.id, e)
 
 
 class WebhookServer:
