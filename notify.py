@@ -10,6 +10,7 @@ import schedule
 import telebot
 
 from database import get_coming_notifications
+from bot import notify_admin
 
 import logging
 import logging.config
@@ -79,7 +80,7 @@ def notification():
 
         schedule.every().monday.at("04:00").do(send_week_notifications)
 
-        bot.send_message(tg_admin_id, "Ежедневные уведомления включены")
+        notify_admin("Ежедневные уведомления включены")
 
         while True:
             schedule.run_pending()
@@ -89,8 +90,8 @@ def notification():
         raise ex
     finally:
         final_msg = "Бот прекратил свою работу"
-        logging.info(final_msg)
-        bot.send_message(tg_admin_id, final_msg)
+        logging.error(final_msg)
+        notify_admin(final_msg)
 
 
 if __name__ == '__main__':
