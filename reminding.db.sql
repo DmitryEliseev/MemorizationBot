@@ -1,4 +1,12 @@
 BEGIN TRANSACTION;
+INSERT INTO `author` VALUES (1,'Рождественский Роберт Иванович',1932,1994);
+INSERT INTO `author` VALUES (2,'Тургенев Иван Сергеевич',1818,1883);
+INSERT INTO `author` VALUES (3,'Асадов Эдуард Аркадьевич',1924,2004);
+INSERT INTO `author` VALUES (4,'Лермонтов Михаил Юрьевич',1814,1841);
+INSERT INTO `author` VALUES (5,'Есенин Сергей Александрович',1895,1925);
+INSERT INTO `author` VALUES (6,'Бродский Иосиф Александрович',1940,1996);
+INSERT INTO `author` VALUES (7,'Симонов Константин Михайлович',1915,1979);
+INSERT INTO `author` VALUES (8,'Пушкин Александр Сергеевич',1799,1837);
 INSERT INTO `reminding` VALUES (1,'2017-10-29',8,1836,'Я памятник себе воздвиг','http://www.stihi-rus.ru/Pushkin/stihi/236.htm');
 INSERT INTO `reminding` VALUES (2,'2017-10-22',5,1829,'Я вас любил','http://www.stihi-rus.ru/Pushkin/stihi/231.htm');
 INSERT INTO `reminding` VALUES (3,'2017-10-15',5,1925,'Какая ночь, я не могу','http://www.stihi-rus.ru/1/Esenin/49.htm');
@@ -20,12 +28,6 @@ INSERT INTO `reminding` VALUES (18,'2017-11-12',1,1973,'Мгновения','htt
 INSERT INTO `reminding` VALUES (19,'2017-11-19',3,1966,'Что такое счастье?','http://www.stihi-rus.ru/1/Asadov/134.htm');
 INSERT INTO `reminding` VALUES (20, '2018-01-24',4,1838,'Дума','http://www.stihi-rus.ru/1/Lermontov/32.htm');
 INSERT INTO `reminding` VALUES (21, '2018-02-11',3,1967,'Аптека-счастья', 'http://www.stihi-rus.ru/1/Asadov/1.htm');
-INSERT INTO `author` VALUES (1,'Рождественский Роберт Иванович',1932,1994);
-INSERT INTO `author` VALUES (2,'Тургенев Иван Сергеевич',1818,1883);
-INSERT INTO `author` VALUES (3,'Асадов Эдуард Аркадьевич',1924,2004);
-INSERT INTO `author` VALUES (4,'Лермонтов Михаил Юрьевич',1814,1841);
-INSERT INTO `author` VALUES (5,'Есенин Сергей Александрович',1895,1925);
-INSERT INTO `author` VALUES (6,'Бродский Иосиф Александрович',1940,1996);
-INSERT INTO `author` VALUES (7,'Симонов Константин Михайлович',1915,1979);
-INSERT INTO `author` VALUES (8,'Пушкин Александр Сергеевич',1799,1837);
+INSERT INTO `reminding` VALUES (22, '2018-09-25',5,1935,'Отговорила роща золотая', 'http://www.stihi-rus.ru/1/Esenin/86.htm');
+INSERT INTO `reminding` VALUES (23, '2019-03-03',1,1966,'Город детства', 'https://www.chitalnya.ru/work/715559/');
 COMMIT;
