@@ -97,6 +97,36 @@ class InsertAuthorException(Exception):
     pass
 
 
+def add_insert_to_sql(table, *args):
+    """Дублирование создания сущности в SQL файле"""
+
+    output_str = "INSERT INTO `{}` VALUES ({},{});\n"
+
+    content = []
+    with open('reminding.db.sql', 'r', encoding="utf-8") as file:
+        content = file.readlines()
+    
+    
+    author_inserts = sum(1 for row in content if 'author' in row)
+    remindings_inserts = len(content) - author_inserts - 2
+    
+    index_to_insert = author_inserts if table == 'author' else author_inserts + remindings_inserts
+    right_part = content[index_to_insert].split('(')[1]
+    id_to_insert = int(right_part.split(',')[0])
+
+    content.insert(
+        index_to_insert + 1,
+        output_str.format(
+            table,
+            id_to_insert + 1,
+            ','.join(map(str, args))
+        )
+    )
+
+    with open('reminding.db.sql', 'w', encoding="utf-8") as file:
+        file.write(''.join(content))
+
+
 @init_db
 def check_author_existance(author_surname):
     """Проверка на наличие автора в БД"""
@@ -104,6 +134,16 @@ def check_author_existance(author_surname):
     for author in Author.select():
         if author_surname.lower() == author.name.split()[0].lower():
             return author
+
+@init_db
+def check_poem_existance(caption):
+    """Проверка на наличие стихотворения в БД"""
+
+    try:
+        Reminding.get(Reminding.caption==caption)
+        return True
+    except:
+        return False
 
 
 @init_db
@@ -114,17 +154,30 @@ def insert_poem(author_surname, caption, year, link):
     if not author:
         raise InsertPoemException('Не найден автор. Воспользуйтесь командой /addauthor')
 
+    if check_poem_existance(caption):
+        raise InsertPoemException('Такое стихотворение уже есть')
+
     try:
         int(year)
     except ValueError:
         raise InsertPoemException('Неверный тип года написания стихотворения')
 
+    current_date = datetime.datetime.now().date()
     Reminding.create(
         author=author,
-        memorization_date=datetime.datetime.now().date(),
+        memorization_date=current_date,
         year=int(year),
         caption=caption,
         link=link
+    )
+
+    add_insert_to_sql(
+        'reminding',
+        "'{}'".format(current_date.strftime("%Y-%m-%d")), 
+        author.id, 
+        year, 
+        "'{}'".format(caption), 
+        "'{}'".format(link)
     )
 
 
@@ -150,6 +203,13 @@ def insert_author(author_fio, year_of_birthday, year_of_death):
         name=author_fio,
         birthday=int(year_of_birthday),
         death_day=int(year_of_death)
+    )
+
+    add_insert_to_sql(
+        'author', 
+        "'{}'".format(author_fio), 
+        year_of_birthday, 
+        year_of_death
     )
 
 
