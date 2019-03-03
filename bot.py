@@ -8,6 +8,8 @@
 import logging
 import logging.config
 
+from time import sleep
+
 import telebot
 from telebot.types import Update
 
@@ -111,6 +113,12 @@ def add_poem(message):
         bot.send_message(message.chat.id, e)
 
 
+def notify_admin(message):
+    """Уведомления админа"""
+
+    bot.send_message(SETTINGS['telegram_admin_id'], message)
+
+
 class WebhookServer:
     """Класс для CherryPy приложения"""
 
@@ -126,12 +134,30 @@ class WebhookServer:
             raise cherrypy.HTTPError(403)
 
 
+def start_server(attempt=0):
+    """Запуск и перезапуск сервера при необходимости"""
+
+    try:
+        if attempt <= 5:
+            # Запуск сервера
+            cherrypy.quickstart(WebhookServer(), WEBHOOK_URL_PATH, {'/': {}})
+
+            # Сообщение о том, что бот запущен
+            msg = 'запущен' if not attempt else 'перезапущен в {} раз'.format(attempt)
+            notify_admin("Бот {} (webhook)".format(msg))
+        else:
+            notify_admin("Бот упал")
+    except:
+        sleep(10)
+        start_server(attempt=attempt + 1)
+
+
 if SETTINGS['test_mode']:
     # Работа на пуллинге локально
     bot.remove_webhook()
 
     # Сообщение о том, что бот запущен
-    bot.send_message(SETTINGS['telegram_admin_id'], "Бот запущен")
+    notify_admin("Бот запущен (polling)")
 
     bot.polling(none_stop=True)
 else:
@@ -161,8 +187,4 @@ else:
         'server.ssl_private_key': WEBHOOK_SSL_PRIV
     })
 
-    # Запуск сервера
-    cherrypy.quickstart(WebhookServer(), WEBHOOK_URL_PATH, {'/': {}})
-
-    # Сообщение о том, что бот запущен
-    bot.send_message(SETTINGS['telegram_admin_id'], "Бот запущен")
+    start_server()
