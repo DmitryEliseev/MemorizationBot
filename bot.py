@@ -134,7 +134,7 @@ class WebhookServer:
             raise cherrypy.HTTPError(403)
 
 
-def start_server(attempt=0):
+def start_webhook_server(WEBHOOK_URL_PATH, attempt=0):
     """Запуск и перезапуск сервера при необходимости"""
 
     try:
@@ -149,42 +149,49 @@ def start_server(attempt=0):
             notify_admin("Бот упал")
     except:
         sleep(10)
-        start_server(attempt=attempt + 1)
+        start_webhook_server(WEBHOOK_URL_PATH, attempt=attempt + 1)
 
 
-if SETTINGS['test_mode']:
-    # Работа на пуллинге локально
-    bot.remove_webhook()
+def start_bot():
+    """Запуск бота"""
 
-    # Сообщение о том, что бот запущен
-    notify_admin("Бот запущен (polling)")
+    if SETTINGS['test_mode']:
+        # Работа на пуллинге локально
+        bot.remove_webhook()
 
-    bot.polling(none_stop=True)
-else:
-    WEBHOOK_HOST = SETTINGS['webhook_host']
-    WEBHOOK_PORT = SETTINGS['webhook_port']
-    WEBHOOK_LISTEN = SETTINGS['webhook_listen']
+        # Сообщение о том, что бот запущен
+        notify_admin("Бот запущен (polling)")
 
-    WEBHOOK_SSL_CERT = './webhook_cert.pem'
-    WEBHOOK_SSL_PRIV = './webhook_pkey.pem'
+        bot.polling(none_stop=True)
+    else:
+        WEBHOOK_HOST = SETTINGS['webhook_host']
+        WEBHOOK_PORT = SETTINGS['webhook_port']
+        WEBHOOK_LISTEN = SETTINGS['webhook_listen']
 
-    WEBHOOK_URL_BASE = 'https://{}:{}'.format(WEBHOOK_HOST, WEBHOOK_PORT)
-    WEBHOOK_URL_PATH = '/{}/'.format(TG_TOKEN)
+        WEBHOOK_SSL_CERT = './webhook_cert.pem'
+        WEBHOOK_SSL_PRIV = './webhook_pkey.pem'
 
-    # Удаление и создание вебхука
-    bot.remove_webhook()
-    bot.set_webhook(
-        url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
-        certificate=open(WEBHOOK_SSL_CERT, 'r')
-    )
+        WEBHOOK_URL_BASE = 'https://{}:{}'.format(WEBHOOK_HOST, WEBHOOK_PORT)
+        WEBHOOK_URL_PATH = '/{}/'.format(TG_TOKEN)
 
-    # Настройки сервера CherryPy
-    cherrypy.config.update({
-        'server.socket_host': WEBHOOK_LISTEN,
-        'server.socket_port': WEBHOOK_PORT,
-        'server.ssl_module': 'builtin',
-        'server.ssl_certificate': WEBHOOK_SSL_CERT,
-        'server.ssl_private_key': WEBHOOK_SSL_PRIV
-    })
+        # Удаление и создание вебхука
+        bot.remove_webhook()
+        bot.set_webhook(
+            url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
+            certificate=open(WEBHOOK_SSL_CERT, 'r')
+        )
 
-    start_server()
+        # Настройки сервера CherryPy
+        cherrypy.config.update({
+            'server.socket_host': WEBHOOK_LISTEN,
+            'server.socket_port': WEBHOOK_PORT,
+            'server.ssl_module': 'builtin',
+            'server.ssl_certificate': WEBHOOK_SSL_CERT,
+            'server.ssl_private_key': WEBHOOK_SSL_PRIV
+        })
+
+        start_webhook_server(WEBHOOK_URL_PATH)
+
+
+if __name__ == '__main__':
+    start_bot()
