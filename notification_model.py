@@ -76,13 +76,13 @@ class RemindingModel:
     def __str__(self):
         str_model = (
             '{author_name} ({birthday}-{death_day}). '
-            '{caption} ({year}). Выучено {memo_date}, '
+            '{caption}{year}. Выучено {memo_date}, '
             'повторение {notification_type}. {link}'
         )
 
         return str_model.format(
             caption=self.caption,
-            year=self.year,
+            year=' ({})'.format(self.year) if self.year else '',
             link=self.link,
             author_name=self.short_author_name(),
             birthday=self.author_birthday,
@@ -99,7 +99,7 @@ class RemindingModel:
 
         return str_model.format(
             caption=self.caption,
-            year=self.year,
+            year=' ({})'.format(self.year) if self.year else '',
             link=self.link,
             author_name=self.short_author_name(),
             birthday=self.author_birthday,
