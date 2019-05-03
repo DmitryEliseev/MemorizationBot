@@ -31,4 +31,5 @@ INSERT INTO `reminding` VALUES (21, '2018-02-11',3,1967,'Аптека-счаст
 INSERT INTO `reminding` VALUES (22, '2018-09-25',5,1935,'Отговорила роща золотая', 'http://www.stihi-rus.ru/1/Esenin/86.htm');
 INSERT INTO `reminding` VALUES (23, '2019-03-03',1,1966,'Город детства', 'https://www.chitalnya.ru/work/715559/');
 INSERT INTO `reminding` VALUES (24,'2019-04-14',8,1818,'К Чаадаеву','https://rvb.ru/pushkin/01text/01versus/0217_22/1818/0036.htm');
+INSERT INTO `reminding` VALUES (25,'2019-05-03',6,1980,'Я входил вместо дикого зверя в клетку','http://www.world-art.ru/lyric/lyric.php?id=7739');
 COMMIT;
