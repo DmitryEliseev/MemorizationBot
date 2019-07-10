@@ -40,6 +40,8 @@ def start_msg(message):
         constants.MSG_START_COMMAND
     )
 
+    logger.info('Обработана команда /start')
+
 
 @bot.message_handler(commands=['list'])
 def list_all_poems(message):
@@ -54,6 +56,8 @@ def list_all_poems(message):
         '\n'.join(poems)
     )
 
+    logger.info('Обработана команда /list')
+
 
 @bot.message_handler(commands=['detlist'])
 def list_all_poems_detailed(message):
@@ -66,6 +70,8 @@ def list_all_poems_detailed(message):
         disable_web_page_preview=True
     )
 
+    logger.info('Обработана команда /detlist')
+
 
 @bot.message_handler(commands=['nextmonth'])
 def list_next_30_days_notifications(message):
@@ -75,6 +81,8 @@ def list_next_30_days_notifications(message):
         bot.send_message(message.chat.id, '\n\n'.join(poems))
     else:
         bot.send_message(message.chat.id, 'Уведомлений на ближайшие 30 дней нет')
+
+    logger.info('Обработана команда /nextmonth')
 
 
 @bot.message_handler(commands=['addauthor'])
@@ -86,13 +94,21 @@ def add_author(message):
         author, date_of_birthday, date_of_death = msg_text.split(';')
         insert_author(author.strip(), date_of_birthday.strip(), date_of_death.strip())
         bot.send_message(message.chat.id, constants.MSG_SUCCESS_AUTHOR_INSERT)
+        logger.info('Успешно выполнена команда /addauthor')
     except ValueError:
         bot.send_message(
             message.chat.id,
             constants.ERROR_WRONG_ADD_AUTHOR_FORMAT
         )
+
+        logger.info(
+            'При выполнении команды /addauthor был несоблюден формат '
+            'ввода данных. Текст сообщения: {}'.format(constants.ERROR_WRONG_ADD_AUTHOR_FORMAT, message.text)
+        )
     except InsertAuthorException as e:
         bot.send_message(message.chat.id, e)
+
+        logger.error('При выполнении команды /addauthor возникла ошибка: {}'.format(e))
 
 
 @bot.message_handler(commands=['addpoem'])
@@ -104,13 +120,20 @@ def add_poem(message):
         surname, caption, year, link = msg_text.split(';')
         insert_poem(surname.strip(), caption.strip(), year.strip(), link.strip())
         bot.send_message(message.chat.id, constants.MSG_SUCCESS_POEM_INSERT)
+        logger.info('Успешно выполнена команда /addpoem')
     except ValueError:
         bot.send_message(
             message.chat.id,
             constants.ERROR_WRONG_ADD_POEM_FORMAT
         )
+
+        logger.info(
+            'При выполнении команды /addpoem был несоблюден формат '
+            'ввода данных. Текст сообщения: {}'.format(constants.ERROR_WRONG_ADD_POEM_FORMAT, message.text)
+        )
     except InsertPoemException as e:
         bot.send_message(message.chat.id, e)
+        logger.error('При выполнении команды /addauthor возникла ошибка: {}'.format(e))
 
 
 def notify_admin(message):
@@ -145,8 +168,11 @@ def start_webhook_server(WEBHOOK_URL_PATH, attempt=0):
             # Сообщение о том, что бот запущен
             msg = 'запущен' if not attempt else 'перезапущен в {} раз'.format(attempt)
             notify_admin("Бот {} (webhook)".format(msg))
+
+            logger.info('Сервер запущен. Попытка {}'.format(attempt))
         else:
-            notify_admin("Бот упал")
+            notify_admin('Бот упал')
+            logger.info('Бот упал')
     except:
         sleep(10)
         start_webhook_server(WEBHOOK_URL_PATH, attempt=attempt + 1)
@@ -155,7 +181,7 @@ def start_webhook_server(WEBHOOK_URL_PATH, attempt=0):
 def start_bot():
     """Запуск бота"""
 
-    if SETTINGS['test_mode']:
+    if int(SETTINGS['test_mode']):
         # Работа на пуллинге локально
         bot.remove_webhook()
 

@@ -94,7 +94,7 @@ class RemindingModel:
     def short_str(self):
         str_model = (
             '{author_name} ({birthday}-{death_day}) - '
-            '{caption} ({year}). Выучено {memo_date}. {link}'
+            '{caption}{year}. Выучено {memo_date}. {link}'
         )
 
         return str_model.format(

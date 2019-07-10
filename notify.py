@@ -43,6 +43,8 @@ def send_notifications():
             parse_mode='Markdown',
             disable_web_page_preview=True
         )
+        logger.info('Отправлены повторения дня')
+    logger.info('Повторений на день нет')
 
 
 def send_week_notifications():
@@ -65,11 +67,13 @@ def send_week_notifications():
             parse_mode='Markdown',
             disable_web_page_preview=True
         )
+        logger.info('Отправлены повторения на предстояющую неделю')
     else:
         bot.send_message(
             tg_admin_id,
             "На этой неделе нет плановых повторений"
         )
+        logger.info('На предстояющей неделе нет повторений')
 
 
 def notification():
@@ -81,13 +85,13 @@ def notification():
         schedule.every().monday.at("04:00").do(send_week_notifications)
 
         notify_admin("Ежедневные уведомления включены")
+        logger.info('Файл notify.py запущен')
 
         while True:
             schedule.run_pending()
             time.sleep(1)
     except Exception as ex:
         logging.error("Произошла ошибка: {}".format(repr(ex)))
-        raise ex
     finally:
         final_msg = "Бот прекратил свою работу"
         logging.error(final_msg)
