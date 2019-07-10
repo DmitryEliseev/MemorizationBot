@@ -174,7 +174,7 @@ def start_webhook_server(WEBHOOK_URL_PATH, attempt=0):
             notify_admin('Бот упал')
             logger.info('Бот упал')
     except:
-        sleep(10)
+        sleep(2)
         start_webhook_server(WEBHOOK_URL_PATH, attempt=attempt + 1)
 
 
@@ -191,7 +191,7 @@ def start_bot():
         bot.polling(none_stop=True)
     else:
         WEBHOOK_HOST = SETTINGS['webhook_host']
-        WEBHOOK_PORT = SETTINGS['webhook_port']
+        WEBHOOK_PORT = int(SETTINGS['webhook_port'])
         WEBHOOK_LISTEN = SETTINGS['webhook_listen']
 
         WEBHOOK_SSL_CERT = './webhook_cert.pem'
@@ -207,6 +207,8 @@ def start_bot():
             certificate=open(WEBHOOK_SSL_CERT, 'r')
         )
 
+        logger.info('Вебхук успешно установлен: {}'.format(WEBHOOK_URL_BASE + WEBHOOK_URL_PATH))
+
         # Настройки сервера CherryPy
         cherrypy.config.update({
             'server.socket_host': WEBHOOK_LISTEN,
@@ -216,7 +218,9 @@ def start_bot():
             'server.ssl_private_key': WEBHOOK_SSL_PRIV
         })
 
-        start_webhook_server(WEBHOOK_URL_PATH)
+        logger.info('Конфигурация CherryPy обновлена')
+
+        start_webhook_server(WEBHOOK_URL_BASE + WEBHOOK_URL_PATH)
 
 
 if __name__ == '__main__':
