@@ -266,7 +266,3 @@ def start_bot():
         logger.info('Конфигурация CherryPy обновлена')
 
         start_webhook_server(WEBHOOK_URL_BASE + WEBHOOK_URL_PATH)
-
-
-if __name__ == '__main__':
-    start_bot()

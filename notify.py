@@ -89,7 +89,7 @@ def send_week_notifications():
         logger.info(msg)
 
 
-def notification():
+def launch_notifications():
     try:
         if int(SETTINGS['test_mode']):
             # Тестовый режим
@@ -117,7 +117,3 @@ def notification():
         final_msg = 'Файл notify.py прекратил исполнение'
         logger.error(final_msg)
         notify_admin("❌ Ежедневные уведомления отключены")
-
-
-if __name__ == '__main__':
-    notification()
