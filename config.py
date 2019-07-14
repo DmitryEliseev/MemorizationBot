@@ -23,5 +23,3 @@ for key in _config[_cur_settings].keys():
 for key in _config['default']:
     if key not in SETTINGS.keys():
         SETTINGS[key] = _config['default'][key]
-
-logger.info('Текущий профиль настроек: {}'.format(SETTINGS))

@@ -8,7 +8,6 @@
 import os
 import datetime
 import logging
-import logging.config
 
 from peewee import Model
 from peewee import SqliteDatabase

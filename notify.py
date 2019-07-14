@@ -15,7 +15,6 @@ from database import get_coming_notifications
 from bot import notify_admin
 
 import logging
-import logging.config
 
 from config import SETTINGS
 

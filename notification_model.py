@@ -10,7 +10,7 @@ import dateutil.relativedelta as datedelta
 
 from config import SETTINGS
 
-# Модель напоминаний
+# Production модель напоминаний
 classic_repeat_model = [
     lambda a: (a - datedelta.relativedelta(days=1), 'через день'),
     lambda a: (a - datedelta.relativedelta(days=2), 'через 2 дня'),
@@ -29,6 +29,7 @@ test_repeat_model = [
     (lambda i: lambda a: (a - datedelta.relativedelta(days=i), 'через {} день'.format(i)))(i) for i in range(180)
 ]
 
+# Подключение необходимой модели напоминаний
 if int(SETTINGS['test_mode']):
     repeat_model = test_repeat_model
 else:
@@ -42,7 +43,6 @@ def get_all_dates_for_notification(days=None):
     now = datetime.datetime.now().date()
 
     # Предстоящие уведомления на N дней
-
     if days:
         for i in range(days):
             starting_point = now + datedelta.relativedelta(days=i)
@@ -88,7 +88,7 @@ class RemindingModel:
         str_model = (
             '{author_name} ({birthday}-{death_day}). '
             '{caption}{year}. Выучено {memo_date}, '
-            'повторение {notification_type}. {link} #{id}'
+            'повторение {notification_type}. {link}'
         )
 
         return str_model.format(
@@ -99,14 +99,13 @@ class RemindingModel:
             birthday=self.author_birthday,
             death_day=self.author_death_day,
             memo_date=self.format_memo_date(),
-            notification_type=self.notification_type,
-            id=self.id
+            notification_type=self.notification_type
         )
 
     def short_str(self):
         str_model = (
             '{author_name} ({birthday}-{death_day}) - '
-            '{caption}{year}. Выучено {memo_date}. {link} #{id}'
+            '{caption}{year}. Выучено {memo_date}. {link}'
         )
 
         return str_model.format(
@@ -117,7 +116,6 @@ class RemindingModel:
             birthday=self.author_birthday,
             death_day=self.author_death_day,
             memo_date=self.format_memo_date(),
-            id=self.id
         )
 
     def author_poem_name_str(self):
