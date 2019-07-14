@@ -5,6 +5,8 @@
 Основная логика
 """
 
+import sys
+
 import logging
 import logging.config
 
@@ -18,9 +20,10 @@ from cherrypy import request
 
 from database import get_all_poems
 from database import get_coming_notifications
+from database import add_manual_repetition
 from database import insert_author
 from database import insert_poem
-from database import InsertAuthorException, InsertPoemException
+from database import InsertAuthorException, InsertPoemException, InsertReminder
 
 from config import SETTINGS
 import constants
@@ -136,6 +139,32 @@ def add_poem(message):
         logger.error('При выполнении команды /addauthor возникла ошибка: {}'.format(e))
 
 
+@bot.callback_query_handler(func=lambda call: True)
+def callback_inline(call):
+    """Обработка inline-кнопок"""
+
+    poem_id = int(call.data.split('_')[1])
+
+    if call.data.startswith('done'):
+        bot.send_message(call.message.chat.id, 'Спасибо, что повторили стихотворение #{}'.format(poem_id))
+        logger.info('Стихотворение ID:{} повторено!'.format(poem_id))
+        # TODO: хранить статистику в БД
+    elif call.data.startswith('rep'):
+        try:
+            add_manual_repetition(poem_id)
+            bot.send_message(
+                call.message.chat.id,
+                'Стихотворение #{} сохранено для дополнительного повторения'.format(poem_id)
+            )
+            logger.info('Стихотворение ID:{} сохранено для дополнительных повторений!'.format(poem_id))
+        except InsertReminder as ex1:
+            bot.send_message(call.message.chat.id, ex1)
+            logger.info('Стихотворение ID:{}. {}'.format(poem_id, ex1))
+        except Exception as ex2:
+            bot.send_message(call.message.chat.id, "Что-то пошло не так")
+            logger.error('Стихотворение ID:{}. {}'.format(poem_id, ex2))
+
+
 def notify_admin(message):
     """Уведомления админа"""
 
@@ -169,13 +198,18 @@ def start_webhook_server(WEBHOOK_URL_PATH, attempt=0):
             msg = 'запущен' if not attempt else 'перезапущен в {} раз'.format(attempt)
             notify_admin("Бот {} (webhook)".format(msg))
 
-            logger.info('Сервер запущен. Попытка {}'.format(attempt))
+            logger.info('Бот запущен. Режим: webhook. Попытка {}'.format(attempt))
         else:
-            notify_admin('Бот упал')
-            logger.info('Бот упал')
+            msg = '❌ Бот прекратил работу'
+            notify_admin(msg)
+            logger.info(msg)
     except:
         sleep(10)
         start_webhook_server(WEBHOOK_URL_PATH, attempt=attempt + 1)
+    finally:
+        final_msg = 'Файл bot.py прекратил исполнение'
+        logger.error(final_msg)
+        notify_admin("❌ Бот выключен")
 
 
 def start_bot():
@@ -186,9 +220,20 @@ def start_bot():
         bot.remove_webhook()
 
         # Сообщение о том, что бот запущен
-        notify_admin("Бот запущен (polling)")
+        notify_admin('Бот запущен')
+        logger.info('Бот запущен. Режим: polling')
 
-        bot.polling(none_stop=True)
+        while True:
+            try:
+                bot.polling(none_stop=True, interval=0, timeout=0)
+            except Exception as ex:
+                logger.error(ex)
+                sleep(10)
+            finally:
+                final_msg = 'Файл bot.py прекратил исполнение'
+                logger.error(final_msg)
+                notify_admin("❌ Бот выключен")
+                sys.exit(0)
     else:
         WEBHOOK_HOST = SETTINGS['webhook_host']
         WEBHOOK_PORT = SETTINGS['webhook_port']

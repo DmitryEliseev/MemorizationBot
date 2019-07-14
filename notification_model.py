@@ -8,6 +8,8 @@
 import datetime
 import dateutil.relativedelta as datedelta
 
+from config import SETTINGS
+
 # Модель напоминаний
 classic_repeat_model = [
     lambda a: (a - datedelta.relativedelta(days=1), 'через день'),
@@ -22,7 +24,15 @@ classic_repeat_model = [
     lambda a: (a - datedelta.relativedelta(years=2), 'через 2 года')
 ]
 
-repeat_model = classic_repeat_model
+# Тестовая модель напоминаний: напоминания каждый день в течение 365 дней после запоминания
+test_repeat_model = [
+    (lambda i: lambda a: (a - datedelta.relativedelta(days=i), 'через {} день'.format(i)))(i) for i in range(180)
+]
+
+if int(SETTINGS['test_mode']):
+    repeat_model = test_repeat_model
+else:
+    repeat_model = classic_repeat_model
 
 
 def get_all_dates_for_notification(days=None):
@@ -52,10 +62,11 @@ class RemindingModel:
     """Класс с моделью данных напоминания"""
 
     def __init__(
-            self, caption, year, link, author_name,
+            self, id, caption, year, link, author_name,
             author_birthday, author_death_day, memo_date,
             notification_type
     ):
+        self.id = id
         self.caption = caption
         self.year = year
         self.link = link
@@ -77,7 +88,7 @@ class RemindingModel:
         str_model = (
             '{author_name} ({birthday}-{death_day}). '
             '{caption}{year}. Выучено {memo_date}, '
-            'повторение {notification_type}. {link}'
+            'повторение {notification_type}. {link} #{id}'
         )
 
         return str_model.format(
@@ -88,13 +99,14 @@ class RemindingModel:
             birthday=self.author_birthday,
             death_day=self.author_death_day,
             memo_date=self.format_memo_date(),
-            notification_type=self.notification_type
+            notification_type=self.notification_type,
+            id=self.id
         )
 
     def short_str(self):
         str_model = (
             '{author_name} ({birthday}-{death_day}) - '
-            '{caption}{year}. Выучено {memo_date}. {link}'
+            '{caption}{year}. Выучено {memo_date}. {link} #{id}'
         )
 
         return str_model.format(
@@ -105,6 +117,7 @@ class RemindingModel:
             birthday=self.author_birthday,
             death_day=self.author_death_day,
             memo_date=self.format_memo_date(),
+            id=self.id
         )
 
     def author_poem_name_str(self):

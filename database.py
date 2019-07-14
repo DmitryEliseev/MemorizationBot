@@ -47,6 +47,14 @@ class Reminding(Model):
         database = _database
 
 
+class Repetition(Model):
+    poem = ForeignKeyField(Reminding, related_name='poem')
+    repetition_date = DateField()
+
+    class Meta:
+        database = _database
+
+
 def init_db(func):
     def wrapper(*args, **kwargs):
         if not _is_inited:
@@ -74,6 +82,7 @@ def get_coming_notifications(days=None):
     for reminding in reminding_list:
         notifications.append(
             RemindingModel(
+                reminding.id,
                 reminding.caption,
                 reminding.year,
                 reminding.link,
@@ -97,6 +106,10 @@ class InsertAuthorException(Exception):
     pass
 
 
+class InsertReminder(Exception):
+    pass
+
+
 def add_insert_to_sql(table, *args):
     """Дублирование создания сущности в SQL файле"""
 
@@ -105,11 +118,10 @@ def add_insert_to_sql(table, *args):
     content = []
     with open('reminding.db.sql', 'r', encoding="utf-8") as file:
         content = file.readlines()
-    
-    
+
     author_inserts = sum(1 for row in content if 'author' in row)
     remindings_inserts = len(content) - author_inserts - 2
-    
+
     index_to_insert = author_inserts if table == 'author' else author_inserts + remindings_inserts
     right_part = content[index_to_insert].split('(')[1]
     id_to_insert = int(right_part.split(',')[0])
@@ -128,19 +140,20 @@ def add_insert_to_sql(table, *args):
 
 
 @init_db
-def check_author_existance(author_surname):
+def check_author_existence(author_surname):
     """Проверка на наличие автора в БД"""
 
     for author in Author.select():
         if author_surname.lower() == author.name.split()[0].lower():
             return author
 
+
 @init_db
-def check_poem_existance(caption):
+def check_poem_existence(caption):
     """Проверка на наличие стихотворения в БД"""
 
     try:
-        Reminding.get(Reminding.caption==caption)
+        Reminding.get(Reminding.caption == caption)
         return True
     except:
         return False
@@ -150,11 +163,11 @@ def check_poem_existance(caption):
 def insert_poem(author_surname, caption, year, link):
     """Занесенив в БД стихотворения"""
 
-    author = check_author_existance(author_surname)
+    author = check_author_existence(author_surname)
     if not author:
         raise InsertPoemException('Не найден автор. Воспользуйтесь командой /addauthor')
 
-    if check_poem_existance(caption):
+    if check_poem_existence(caption):
         raise InsertPoemException('Такое стихотворение уже есть')
 
     try:
@@ -173,10 +186,10 @@ def insert_poem(author_surname, caption, year, link):
 
     add_insert_to_sql(
         'reminding',
-        "'{}'".format(current_date.strftime("%Y-%m-%d")), 
-        author.id, 
-        year, 
-        "'{}'".format(caption), 
+        "'{}'".format(current_date.strftime("%Y-%m-%d")),
+        author.id,
+        year,
+        "'{}'".format(caption),
         "'{}'".format(link)
     )
 
@@ -186,7 +199,7 @@ def insert_author(author_fio, year_of_birthday, year_of_death):
     """Занесение в БД автора"""
 
     author_surname = author_fio.split()[0].strip()
-    if check_author_existance(author_surname):
+    if check_author_existence(author_surname):
         raise InsertAuthorException('Данный автор уже есть в базе данных')
 
     try:
@@ -206,9 +219,9 @@ def insert_author(author_fio, year_of_birthday, year_of_death):
     )
 
     add_insert_to_sql(
-        'author', 
-        "'{}'".format(author_fio), 
-        year_of_birthday, 
+        'author',
+        "'{}'".format(author_fio),
+        year_of_birthday,
         year_of_death
     )
 
@@ -219,6 +232,7 @@ def get_all_poems():
     for reminding in Reminding.select():
         notifications.append(
             RemindingModel(
+                reminding.id,
                 reminding.caption,
                 reminding.year,
                 reminding.link,
@@ -230,6 +244,16 @@ def get_all_poems():
             )
         )
     return notifications
+
+
+@init_db
+def add_manual_repetition(poem_id: int):
+    poem = Reminding.get(Reminding.id == poem_id)
+    reps = Repetition.select().where(Repetition.poem_id == poem_id)
+    if reps:
+        raise InsertReminder('Дополнительное повторение стихотворения #{} уже сохранено'.format(poem_id))
+
+    Repetition.create(poem=poem, repetition_date=datetime.datetime.now().date())
 
 
 def full_db():
@@ -249,7 +273,7 @@ def _init_db():
 
     global _is_inited
     _database.connect()
-    _database.create_tables([Author, Reminding], safe=True)
+    _database.create_tables([Author, Reminding, Repetition], safe=True)
     logger.info("БД создана")
     full_db()
     logger.info("БД наполнена")
