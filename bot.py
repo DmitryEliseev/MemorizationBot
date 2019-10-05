@@ -215,7 +215,9 @@ def start_webhook_server(WEBHOOK_URL_PATH, attempt=0):
 def start_bot():
     """Запуск бота"""
 
-    if int(SETTINGS['test_mode']):
+    # Запуск на тесте бота через polling 
+    # Запуск на проде бота через polling, если вебхук отключен
+    if int(SETTINGS['test_mode']) or not int(SETTINGS['webhook']):
         # Работа на пуллинге локально
         bot.remove_webhook()
 

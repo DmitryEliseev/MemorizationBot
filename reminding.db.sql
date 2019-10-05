@@ -7,6 +7,7 @@ INSERT INTO `author` VALUES (5,'Есенин Сергей Александров
 INSERT INTO `author` VALUES (6,'Бродский Иосиф Александрович',1940,1996);
 INSERT INTO `author` VALUES (7,'Симонов Константин Михайлович',1915,1979);
 INSERT INTO `author` VALUES (8,'Пушкин Александр Сергеевич',1799,1837);
+INSERT INTO `author` VALUES (9,'Цветаева Марина Ивановна',1892,1941);
 INSERT INTO `reminding` VALUES (1,'2017-10-29',8,1836,'Я памятник себе воздвиг','http://www.stihi-rus.ru/Pushkin/stihi/236.htm');
 INSERT INTO `reminding` VALUES (2,'2017-10-22',5,1829,'Я вас любил','http://www.stihi-rus.ru/Pushkin/stihi/231.htm');
 INSERT INTO `reminding` VALUES (3,'2017-10-15',5,1925,'Какая ночь, я не могу','http://www.stihi-rus.ru/1/Esenin/49.htm');
@@ -32,4 +33,5 @@ INSERT INTO `reminding` VALUES (22, '2018-09-25',5,1935,'Отговорила р
 INSERT INTO `reminding` VALUES (23, '2019-03-03',1,1966,'Город детства', 'https://www.chitalnya.ru/work/715559/');
 INSERT INTO `reminding` VALUES (24,'2019-04-14',8,1818,'К Чаадаеву','https://rvb.ru/pushkin/01text/01versus/0217_22/1818/0036.htm');
 INSERT INTO `reminding` VALUES (25,'2019-05-03',6,1980,'Я входил вместо дикого зверя в клетку','http://www.world-art.ru/lyric/lyric.php?id=7739');
+INSERT INTO `reminding` VALUES (26,'2019-10-05',9,1915,'Мне нравится, что вы больны не мной','https://rustih.ru/marina-cvetaeva-mne-nravitsya-chto-vy-bolny-ne-mnoj/');
 COMMIT;
