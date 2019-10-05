@@ -254,6 +254,38 @@ def add_manual_repetition(poem_id: int):
 
     Repetition.create(poem=poem, repetition_date=datetime.datetime.now().date())
 
+@init_db
+def get_coming_manual_notifications(days):
+    """Получение повторений, который были настроены дополнительно"""
+
+    dates_for_notification = get_all_dates_for_notification(days=days)
+
+    repetition_list = (
+        Repetition
+            .select()
+            .where((Repetition.repetition_date << list(dates_for_notification.keys())))
+    )
+
+    notifications = []
+    for repetition in repetition_list:
+        reminding = repetition.poem
+
+        notifications.append(
+            RemindingModel(
+                reminding.id,
+                reminding.caption,
+                reminding.year,
+                reminding.link,
+                reminding.author.name,
+                reminding.author.birthday,
+                reminding.author.death_day,
+                reminding.memorization_date,
+                dates_for_notification[repetition.repetition_date]
+            )
+
+        )
+
+    return notifications
 
 def full_db():
     """Заполнение БД"""
