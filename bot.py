@@ -21,6 +21,7 @@ from cherrypy import request
 from database import get_all_poems
 from database import get_coming_notifications
 from database import add_manual_repetition
+from database import delete_all_manual_notifications
 from database import insert_author
 from database import insert_poem
 from database import InsertAuthorException, InsertPoemException, InsertReminder
@@ -137,6 +138,16 @@ def add_poem(message):
     except InsertPoemException as e:
         bot.send_message(message.chat.id, e)
         logger.error('При выполнении команды /addauthor возникла ошибка: {}'.format(e))
+
+
+@bot.message_handler(commands=['del_extra_reps'])
+def delete_manual_repetitions(message):
+    """Удаление всех дополнительных повторений"""
+    delete_all_manual_notifications()
+    bot.send_message(
+        message.chat.id,
+        "Все дополнительные повторения удалены"
+    )
 
 
 @bot.callback_query_handler(func=lambda call: True)

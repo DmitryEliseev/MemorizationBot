@@ -250,9 +250,12 @@ def add_manual_repetition(poem_id: int):
     poem = Reminding.get(Reminding.id == poem_id)
     reps = Repetition.select().where(Repetition.poem_id == poem_id)
     if reps:
-        raise InsertReminder('Дополнительное повторение стихотворения #{} уже сохранено'.format(poem_id))
+        # raise InsertReminder('Дополнительное повторение стихотворения #{} уже сохранено'.format(poem_id))
+        for rep in reps:
+            rep.delete_instance()
 
     Repetition.create(poem=poem, repetition_date=datetime.datetime.now().date())
+
 
 @init_db
 def get_coming_manual_notifications(days):
@@ -286,6 +289,13 @@ def get_coming_manual_notifications(days):
         )
 
     return notifications
+
+@init_db
+def delete_all_manual_notifications():
+    """Удаление всех ручных повторений"""
+    q = Repetition.delete()
+    q.execute()
+
 
 def full_db():
     """Заполнение БД"""
